@@ -1,2 +1,2 @@
 # Bubble
-Bubble! Is a full-stack Java Web application framework based on the Servlet protocol
+Bubble! A full-stack Java Web application framework based on the Servlet protocol
