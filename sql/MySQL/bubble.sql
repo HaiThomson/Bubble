@@ -115,7 +115,6 @@ CREATE TABLE `pre_common_session_struct` (
 
 LOCK TABLES `pre_common_session_struct` WRITE;
 /*!40000 ALTER TABLE `pre_common_session_struct` DISABLE KEYS */;
-INSERT INTO `pre_common_session_struct` VALUES ('11BEB6B782434E6794CA118FF3144E89',10,99,6,63,0,'guest',0,0,1491810346,'/cache/show.htm',0,0);
 /*!40000 ALTER TABLE `pre_common_session_struct` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,4 +173,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-10 17:32:26
+-- Dump completed on 2017-04-10 17:42:01
