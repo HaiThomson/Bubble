@@ -1,0 +1,18 @@
+{
+  "_GlobalNotes" : "这是注释，请无视",
+
+  "_FILE_CACHE_DIRECTORY" : "文件缓存位置，精确到文件夹，最后以 / 结尾。默认值，WEB容器启动路径",
+  "FILE_CACHE_DIRECTORY"  : "./cache/",
+
+  "COOKIE_CONFIG" : {
+    "COOKIE_PRE" : "bubble_",
+    "COOKIE_DOMAIN" : "",
+    "COOKIE_PATH" : "/"
+  },
+
+  "LOG_CONFIG" : {
+    "LEVEL" : "ALL",
+    "STEP_TIME" : "1000",
+    "STEP_LINE" : "100"
+  }
+}

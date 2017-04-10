@@ -1,0 +1,6 @@
+#
+# robots.txt for bubble!
+#
+
+User-agent: *
+Disallow: /static/
