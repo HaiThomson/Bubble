@@ -16,7 +16,7 @@
  */
 package source.kernel;
 
-import source.kernel.base.DataBase;
+import source.kernel.db.DataBase;
 
 /**
  * @author Hai Thomson

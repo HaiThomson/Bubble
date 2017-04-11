@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package source.kernel.base;
+package source.kernel.memory.driver;
+
+import source.kernel.memory.MemoryDriver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,20 +24,44 @@ import java.util.Map;
 /**
  * @author Hai Thomson
  */
-public abstract class MemoryDriver {
-	public abstract void init(HashMap config);
+public class RedisMemoryDriver extends MemoryDriver {
+	@Override
+	public void init(HashMap config) {
 
-	public abstract Object get(String key);
+	}
 
-	public abstract Map getMultiple(String[] keys);
+	@Override
+	public Object get(String key) {
+		return null;
+	}
 
-	public abstract boolean set(String key, Object value, long ttl);
+	@Override
+	public Map getMultiple(String[] keys) {
+		return null;
+	}
 
-	public abstract boolean remove(String key);
+	@Override
+	public boolean set(String key, Object value, long ttl) {
+		return false;
+	}
 
-	public abstract boolean clear();
+	@Override
+	public boolean remove(String key) {
+		return false;
+	}
 
-	public abstract boolean increment(String key, int step);
+	@Override
+	public boolean clear() {
+		return false;
+	}
 
-	public abstract boolean decrement(String key, int step);
+	@Override
+	public boolean increment(String key, int step) {
+		return false;
+	}
+
+	@Override
+	public boolean decrement(String key, int step) {
+		return false;
+	}
 }

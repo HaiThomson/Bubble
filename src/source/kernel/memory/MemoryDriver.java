@@ -16,52 +16,26 @@
  */
 package source.kernel.memory;
 
-import source.kernel.base.MemoryDriver;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Hai Thomson
  */
-public class MemcachedMemoryDriver extends MemoryDriver {
-	@Override
-	public void init(HashMap config) {
+public abstract class MemoryDriver {
+	public abstract void init(HashMap config);
 
-	}
+	public abstract Object get(String key);
 
-	@Override
-	public Object get(String key) {
-		return null;
-	}
+	public abstract Map getMultiple(String[] keys);
 
-	@Override
-	public Map getMultiple(String[] keys) {
-		return null;
-	}
+	public abstract boolean set(String key, Object value, long ttl);
 
-	@Override
-	public boolean set(String key, Object value, long ttl) {
-		return false;
-	}
+	public abstract boolean remove(String key);
 
-	@Override
-	public boolean remove(String key) {
-		return false;
-	}
+	public abstract boolean clear();
 
-	@Override
-	public boolean clear() {
-		return false;
-	}
+	public abstract boolean increment(String key, int step);
 
-	@Override
-	public boolean increment(String key, int step) {
-		return false;
-	}
-
-	@Override
-	public boolean decrement(String key, int step) {
-		return false;
-	}
+	public abstract boolean decrement(String key, int step);
 }

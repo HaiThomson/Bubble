@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package source.kernel.memory;
+package source.kernel.memory.driver;
 
 import source.kernel.Container;
-import source.kernel.base.*;
 import source.kernel.base.ExceptionHandler;
+import source.kernel.memory.MemoryDriver;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -124,6 +124,8 @@ public class Core {
 				Container.app().session.update();
 
 				Container.app().session.saved = true;
+
+				Core.setCookie("sessionid", (String) Container.app().session.get("sessionid"), 86400);
 			}
 		}
 	}

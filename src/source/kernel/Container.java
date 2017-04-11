@@ -20,6 +20,7 @@ import source.kernel.base.*;
 import source.kernel.config.GlobalConfig;
 import source.kernel.env.ThreadContextListener;
 import source.kernel.log.Logger;
+import source.kernel.memory.Memory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

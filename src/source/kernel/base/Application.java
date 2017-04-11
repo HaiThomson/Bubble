@@ -21,6 +21,7 @@ import source.kernel.DB;
 import source.kernel.config.GlobalConfig;
 import source.kernel.helper.ArraysHelper;
 import source.kernel.helper.MD5Helper;
+import source.kernel.session.Session;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

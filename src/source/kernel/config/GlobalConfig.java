@@ -19,6 +19,7 @@ package source.kernel.config;
 import com.alibaba.fastjson.JSON;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
+import source.kernel.log.LogConfig;
 
 import java.io.*;
 import java.lang.reflect.Field;

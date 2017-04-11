@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package source.kernel.base;
+package source.kernel.session;
 
 import source.kernel.Container;
 import source.kernel.Core;
+import source.kernel.base.Base;
 import source.kernel.security.token.GeneralToken;
 import source.table.common_session_struct;
 
@@ -26,7 +27,6 @@ import java.util.Map;
 
 /**
  * 如果要序列化Session,传输Session的value属性即可。
- * Session已经缓存到数据库，什么需求？
  *
  * # Maximum size for internal (in-memory) temporary tables. If a table
  * # grows larger than this value, it is automatically converted to disk
@@ -55,19 +55,9 @@ public class Session extends Base {
 
 	protected common_session_struct table = null;
 
-	protected Session() {
+	public Session() {
 		this.value = this.newguest;
 		this.table = (common_session_struct) Container.table("common_session_struct");
-	}
-
-	protected Session(String sessionid, String ip, String userid) {
-		this.value = this.newguest;
-
-		this.table = (common_session_struct) Container.table("common_session_struct");
-
-		if(!(ip == null) && !(ip.equals(""))) {
-			this.init(sessionid, ip, userid);
-		}
 	}
 
 	public void set(String key, Object value) {
@@ -105,7 +95,7 @@ public class Session extends Base {
 		this.sessionid = (String) session.get("sessionid");
 	}
 
-	public Map<String, Object> create(String ip, String userid) {
+	protected Map<String, Object> create(String ip, String userid) {
 		this.isnew = true;
 		this.value = this.newguest;
 		this.set("sessionid", GeneralToken.generateToken(GeneralToken.MODE_UUID));

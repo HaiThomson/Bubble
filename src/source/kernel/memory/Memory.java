@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package source.kernel.base;
+package source.kernel.memory;
 
 import source.kernel.config.GlobalConfig;
-import source.kernel.memory.SimpleMapMemoryDriver;
+import source.kernel.memory.driver.SimpleMapMemoryDriver;
 
 import java.util.HashMap;
 import java.util.Map;

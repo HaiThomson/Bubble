@@ -16,7 +16,6 @@
  */
 package source.kernel.log;
 
-import source.kernel.config.LogConfig;
 import source.kernel.helper.ArraysHelper;
 
 import java.util.concurrent.ConcurrentLinkedQueue;

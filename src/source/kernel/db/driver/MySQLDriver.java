@@ -16,7 +16,7 @@
  */
 package source.kernel.db.driver;
 
-import source.kernel.base.DataBaseDriver;
+import source.kernel.db.DataBaseDriver;
 import source.kernel.db.pool.ConnectionPooling;
 
 import java.sql.Connection;

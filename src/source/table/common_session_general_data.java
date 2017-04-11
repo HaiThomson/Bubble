@@ -1,7 +1,7 @@
 package source.table;
 
 import source.kernel.DB;
-import source.kernel.base.DataBase;
+import source.kernel.db.DataBase;
 import source.kernel.base.Table;
 
 import java.util.Map;

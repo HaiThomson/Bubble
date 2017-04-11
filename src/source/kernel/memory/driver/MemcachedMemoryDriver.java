@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package source.kernel.memory;
+package source.kernel.memory.driver;
 
-import source.kernel.base.MemoryDriver;
+import source.kernel.memory.MemoryDriver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @author Hai Thomson
  */
-public class RedisMemoryDriver extends MemoryDriver {
+public class MemcachedMemoryDriver extends MemoryDriver {
 	@Override
 	public void init(HashMap config) {
 
