@@ -18,7 +18,6 @@ package source.kernel.session.struct;
 
 import source.kernel.Container;
 import source.kernel.Core;
-import source.kernel.security.token.GeneralToken;
 import source.kernel.session.SessionProvider;
 import source.table.common_session_struct;
 
@@ -38,35 +37,20 @@ import java.util.Map;
  */
 public class DBStructSessionProvider extends SessionProvider {
 
-	public String sessionid = null;
-	public Map<String, Object> value = null;
-	public boolean isnew = false;
-	public boolean saved = false;
-
-	protected static final String[] kes = {"",};
-
 	// 初始化数据可以不用修改
 	// 新用户
-	protected Map<String, Object> newguest = new HashMap<String, Object>() {{
+	// newguest 必须和 session表结构保持一致
+	private Map<String, Object> newguest = new HashMap<String, Object>() {{
 		put("sessionid", "");put("ip1", "");put("ip2", "");put("ip3", "");put("ip4", "");
 		put("userid", "");put("username", "");put("groupid", 0);put("invisible", 0);put("lastactivity", 0L);put("actionname", "");
+		put("cartid", 0);put("xid", 0);
 	}};
 
-	protected common_session_struct table = null;
+	public Map<String, Object> value = null;
+	public common_session_struct table = null;
 
 	public DBStructSessionProvider() {
-		this.value = this.newguest;
 		this.table = (common_session_struct) Container.table("common_session_struct");
-	}
-
-	public DBStructSessionProvider(String sessionid, String ip, String userid) {
-		this.value = this.newguest;
-
-		this.table = (common_session_struct) Container.table("common_session_struct");
-
-		if(!(ip == null) && !(ip.equals(""))) {
-			this.isExistent(sessionid, ip, userid);
-		}
 	}
 
 	@Override
@@ -79,6 +63,9 @@ public class DBStructSessionProvider extends SessionProvider {
 			this.set("ip3", ip[2]);
 			this.set("ip4", ip[3]);
 		} else {
+			if (!this.value.containsKey(key)) {
+				return;
+			}
 			this.value.put(key, value);
 		}
 	}
@@ -94,28 +81,27 @@ public class DBStructSessionProvider extends SessionProvider {
 
 	@Override
 	public boolean isExistent(String sessionid, String ip, String userid) {
-		Map session = null;
+		Map sessionValue = null;
 		if(sessionid !=null && !sessionid.equals("")) {
-			session = this.table.fetch(sessionid, ip, userid);
+			sessionValue = this.table.fetch(sessionid, ip, userid);
+		} else {
+			return false;
 		}
 
-		if(session == null || !((session.get("userid")).toString()).equals(userid)) {
-			session = this.create(GeneralToken.generateToken(GeneralToken.MODE_UUID), ip, userid);
+		if(sessionValue == null || sessionValue.get("sessionid").equals("") || sessionValue.get("userid").equals("") || !((sessionValue.get("userid")).toString()).equals(userid)) {
+			return false;
 		}
 
-		this.value = session;
-		this.sessionid = (String) session.get("sessionid");
-
-		return false;
+		this.value = sessionValue;
+		return true;
 	}
 
 	@Override
-	public Map<String, Object> create(String sessionid, String ip, String userid) {
-		this.isnew = true;
+	public void create(String sessionid, String ip, String userid) {
 		this.value = this.newguest;
-		this.set("sessionid", GeneralToken.generateToken(GeneralToken.MODE_UUID));
-		this.set("userid", userid);
+		this.set("sessionid", sessionid);
 		this.set("ip", ip);
+		this.set("userid", userid);
 		if (userid != null && !userid.equals("")) {
 			Map user = Core.getUserByUid(userid);
 			if (user != null && user.get("invisible") != null) {
@@ -123,27 +109,24 @@ public class DBStructSessionProvider extends SessionProvider {
 			}
 		}
 		this.set("lastactivity", Container.app().TIMESTAMP);
-		this.sessionid = (String) this.value.get("sessionid");
-
-		return this.value;
 	}
 
 	@Override
 	public long delete() {
+		this.value = null;
 		return this.table.delete_by_session(this.value, 3600, 60);
 	}
 
 	@Override
-	public void update() {
-		if(this.sessionid != null && !this.sessionid.equals("")) {
-			if(this.isnew) {
-				this.delete();
+	public void update(boolean isnew) {
+		String sessionid = (String) this.get("sessionid");
+		if(sessionid != null && !sessionid.equals("")) {
+			if(isnew) {
 				this.table.insert(this.value);
 			} else {
 				this.table.update((String) this.value.get("sessionid"), this.value);
 			}
-			Core.setGlobal("session", this.value);
-			Core.setCookie("sessionid", this.sessionid, 86400);
+			Core.setCookie("sessionid", sessionid, 86400);
 		}
 	}
 

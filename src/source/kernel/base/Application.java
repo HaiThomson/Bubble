@@ -125,7 +125,6 @@ public class Application {
 		this.Global.put("config", GlobalConfig.instance());
 		this.Global.put("member", new HashMap<String, Object>());
 		this.Global.put("cookie", new HashMap<String, Object>());
-		this.Global.put("session", new HashMap<String, Object>());
 		this.Global.put("lang", new HashMap<String, Object>());
 
 		this.Global.put("actionname", request.getRequestURI());
@@ -355,11 +354,10 @@ public class Application {
 
 	protected void initSession() {
 		if (this.initSession) {
-			this.session = new Session();
+			this.session = new Session(null);
 
 			this.session.init(((Cookie) ((HashMap) this.value.get("cookie")).get("sessionid")).getValue(), (String) this.value.get("clientip"), (String) this.value.get("userid"));
-			this.value.put("sessionid", this.session.sessionid);
-			this.value.put("session", this.session.value);
+			this.value.put("sessionid", this.session.get("sessionid"));
 
 			if (this.value.get("sessionid") != null && !((String) this.value.get("sessionid")).equals(((Cookie) ((HashMap) this.value.get("cookie")).get("sessionid")).getValue())) {
 				// 有效时间一小时，改读配置和动态配置
@@ -369,10 +367,7 @@ public class Application {
 			// session不自动续时，因为和登录cookie无关
 			// session表清理需要额外的线程或计划任务处理
 
-			// 5分钟内算一次浏览
-			if (this.value.get("userid") != null && (this.session.isnew || ((Long) this.session.get("lastactivity") + 60 * 5) < this.TIMESTAMP)) {
-				this.session.set("lastactivity", this.TIMESTAMP);
-			}
+			this.session.set("lastactivity", this.TIMESTAMP);
 		}
 	}
 

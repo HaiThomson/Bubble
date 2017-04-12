@@ -67,6 +67,7 @@ public class RuntimeContextListener implements ServletContextListener {
         ENV.put("java.vendor", System.getProperty("java.vendor"));
         ENV.put("java.vm.name", System.getProperty("java.vm.name"));
         // JVM内时区不会随操作系统变化而变化.如更改系统时区，必须重启JVM
+        // 获取值貌似有问题,不同时间测试
         ENV.put("zoneoffset",  new GregorianCalendar().get(java.util.Calendar.ZONE_OFFSET));
 
         servletContext.setAttribute("ENV", ENV);
