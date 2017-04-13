@@ -16,10 +16,10 @@
  */
 package source.kernel.config;
 
-import com.alibaba.fastjson.JSON;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.log.LogConfig;
+import source.kernel.serialization.json.Json;
 import source.kernel.session.SessionConfig;
 
 import java.io.*;
@@ -77,7 +77,7 @@ public class GlobalConfig extends Base {
 
     public static void init(String path) {
         try {
-            Map config = JSON.parseObject(GlobalConfig.loadConfigFile(path));
+            Map config = Json.parseMap(GlobalConfig.loadConfigFile(path));
             if (config != null && config.size() > 0) {
                 GlobalConfig.setItemValue(config);
             } else {
