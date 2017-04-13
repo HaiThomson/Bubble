@@ -40,7 +40,7 @@ public class Session extends Base {
 		// SessionProvider必须保证init后,sessionProvider.value和sessionProvider.sessionid有值！
 		// sessionProvider应该判断sessionid和userid对应关系
 		// 这里是再次判断保证无误
-		if (!this.sessionProvider.isExistent(sessionid, ip, userid) || (String)this.get("userid") == null || !((String)this.get("userid")).equals(userid)) {
+		if (!this.sessionProvider.isExistent(sessionid, ip, userid)) {
 			this.sessionProvider.create(GeneralToken.generateToken(), ip, userid);
 			this.isnew = true;
 		}

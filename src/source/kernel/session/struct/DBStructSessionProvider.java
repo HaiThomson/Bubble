@@ -18,6 +18,7 @@ package source.kernel.session.struct;
 
 import source.kernel.Container;
 import source.kernel.Core;
+import source.kernel.session.SessionConfig;
 import source.kernel.session.SessionProvider;
 import source.table.common_session_struct;
 
@@ -41,7 +42,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	// 新用户
 	// newguest 必须和 session表结构保持一致
 	private Map<String, Object> newguest = new HashMap<String, Object>() {{
-		put("sessionid", "");put("ip1", "");put("ip2", "");put("ip3", "");put("ip4", "");
+		put("sessionid", "");put("dateline", 0);;put("ip1", "");put("ip2", "");put("ip3", "");put("ip4", "");
 		put("userid", "");put("username", "");put("groupid", 0);put("invisible", 0);put("lastactivity", 0L);put("actionname", "");
 		put("cartid", 0);put("xid", 0);
 	}};
@@ -89,6 +90,11 @@ public class DBStructSessionProvider extends SessionProvider {
 		}
 
 		if(sessionValue == null || sessionValue.get("sessionid").equals("") || sessionValue.get("userid").equals("") || !((sessionValue.get("userid")).toString()).equals(userid)) {
+			return false;
+		}
+
+		// 检查是否过期
+		if ((long)sessionValue.get("dateline") < System.currentTimeMillis() / 1000) {
 			return false;
 		}
 

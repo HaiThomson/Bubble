@@ -124,8 +124,6 @@ public class Core {
 				Container.app().session.update();
 
 				Container.app().session.saved = true;
-
-				Core.setCookie("sessionid", (String) Container.app().session.get("sessionid"), 86400);
 			}
 		}
 	}
@@ -164,6 +162,7 @@ public class Core {
 		Core.setCookie(key, value, life, false);
 	}
 
+	// life 单位秒
 	public static void setCookie(String key, String value, int life, boolean httponly) {
 		String enKey = GlobalConfig.COOKIE_CONFIG.COOKIE_PRE + key;
 
@@ -193,7 +192,7 @@ public class Core {
 		cookie.setMaxAge(life);
 
 		Container.app().response.addCookie(enCookie);
-		((HashMap<String, Object>) Container.app().Global.get("cookie")).put(key, cookie);
+		((HashMap<String, Object>) Container.app().Global.get("cookies")).put(key, cookie);
 	}
 
 	// 占时不加密
@@ -226,11 +225,11 @@ public class Core {
 	}
 
 	public Cookie getCookie(String key) {
-		return (Cookie) ((HashMap<String, Object>) Container.app().Global.get("cookie")).get(key);
+		return (Cookie) ((HashMap<String, Object>) Container.app().Global.get("cookies")).get(key);
 	}
 
 	public Cookie getRequestCookie(String key) {
-		return (Cookie) ((HashMap<String, Object>) Container.app().Global.get("_COOKIE")).get(key);
+		return (Cookie) ((HashMap<String, Object>) Container.app().Global.get("_cookies")).get(key);
 	}
 
 	/**
@@ -367,8 +366,8 @@ public class Core {
 	 * @param cachename
 	 * @param data
 	 */
-	public static void saveSyscache(String cachename, Map data) {
-		((common_syscache) Container.table("common_syscache")).insert(cachename, MapHelper.serializableToBytes(data));
+	public static void saveSyscache(String cachename, Map data, int dateline) {
+		((common_syscache) Container.table("common_syscache")).insert(cachename, MapHelper.serializableToBytes(data), dateline);
 		Container.app().request.getServletContext().setAttribute(cachename, data);
 	}
 
@@ -390,7 +389,7 @@ public class Core {
 	// 载入非必要系统缓存
 	public static Map loadSyscache(String cachename) {
 		Map result = ((common_syscache) Container.table("common_syscache")).query(cachename);
-		if (result != null) {
+		if (result != null && (long)result.get("dateline") > System.currentTimeMillis() / 1000) {
 			return MapHelper.serializationFromBytes((byte[]) result.get("data"));
 		}
 		return null;

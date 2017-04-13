@@ -3,7 +3,7 @@
 <%
 	Map ENV = (Map) request.getAttribute("ENV");
 	Map Global = (Map) request.getAttribute("Global");
-	Map allSession = (Map) Global.get("all");
+	Map allSession = (Map) Global.get("allsession");
 %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>

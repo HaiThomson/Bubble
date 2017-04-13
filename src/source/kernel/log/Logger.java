@@ -67,7 +67,7 @@ public class Logger {
 
 		LogNode end = new LogNode();
 		end.level = "INFO";
-		end.msg = "已正常写入所有日志，如无此信息则可能有日志丢失！";
+		end.msg = "已写入所有日志";
 		LoggerWriter.writeLog(end);
 	}
 

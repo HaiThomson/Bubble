@@ -27,8 +27,8 @@ import java.util.Map;
  * @author Hai Thomson
  */
 public class DBCache {
-	public static boolean saveCache(String cachename, byte[] data) {
-		int number = ((common_cache) Container.table("common_cache")).insert(cachename, data);
+	public static boolean saveCache(String cachename, byte[] data, int dateline) {
+		int number = ((common_cache) Container.table("common_cache")).insert(cachename, data, dateline);
 		if (number > 0) {
 			return true;
 		} else {
@@ -38,7 +38,7 @@ public class DBCache {
 
 	public static byte[] loadCache(String cachename) {
 		Map result = ((common_cache) Container.table("common_cache")).query(cachename);
-		if (result != null) {
+		if (result != null && (long) result.get("dateline") > System.currentTimeMillis()) {
 			return (byte[]) result.get("data");
 		}
 		return null;

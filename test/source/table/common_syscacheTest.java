@@ -21,7 +21,7 @@ public class common_syscacheTest {
 		HashMap<String, Object> setting = new HashMap<String, Object>();
 		setting.put("oltimespan", 10L);
 
-		common_syscache.insert("setting", MapHelper.serializableToBytes(setting));
+		common_syscache.insert("setting", MapHelper.serializableToBytes(setting), 999999999);
 	}
 
 	public static void justtest() {

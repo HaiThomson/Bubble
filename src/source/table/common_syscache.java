@@ -22,7 +22,7 @@ public class common_syscache extends Table {
 	}
 
 	// 类型是自动推断出来的，是不是关联数组Map
-	public static Object insert(String cachename, byte[] data) {
+	public static Object insert(String cachename, byte[] data, int  dateline) {
 		String sql = "REPLACE INTO " + DB.getRealTableName(common_syscache.tableName) + " VALUES(?, ?, ?)";
 
 		SerialBlob blob= null;
@@ -32,7 +32,7 @@ public class common_syscache extends Table {
 			ExceptionHandler.handling(e);
 		}
 
-		return DB.insert(sql, cachename, blob, System.currentTimeMillis() / 1000);
+		return DB.insert(sql, cachename, blob, dateline);
 	}
 
 	public Map fetchAll() {

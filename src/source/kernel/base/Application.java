@@ -124,7 +124,7 @@ public class Application {
 
 		this.Global.put("config", GlobalConfig.instance());
 		this.Global.put("member", new HashMap<String, Object>());
-		this.Global.put("cookie", new HashMap<String, Object>());
+		this.Global.put("cookies", new HashMap<String, Object>());
 		this.Global.put("lang", new HashMap<String, Object>());
 
 		this.Global.put("actionname", request.getRequestURI());
@@ -217,43 +217,32 @@ public class Application {
 			this.value.put("mod", null);
 		}
 
-		// 去除cookie前缀,并把cookie放到 Global 备用
+		// 去除cookie前缀,并把cookie放到 Global
+		int preLength = GlobalConfig.COOKIE_CONFIG.COOKIE_PRE.length();
+		Cookie[] requestCookies = this.request.getCookies();
 		// Map是引用传递而不是值传递
-		int prelength = GlobalConfig.COOKIE_CONFIG.COOKIE_PRE.length();
-		Cookie[] cookieArray = this.request.getCookies();
-		HashMap<String, Object> cookieMap = (HashMap<String, Object>) this.value.get("cookie");
-		HashMap<String, Object> _cookie = new HashMap<String, Object>();
-		if (cookieArray != null) {
-			for (int i = 0; i < cookieArray.length; i++) {
-				String oldName = cookieArray[i].getName();
-				if (oldName.length() > prelength && oldName.substring(0, prelength).equals(GlobalConfig.COOKIE_CONFIG.COOKIE_PRE)) {
-					cookieArray[i] = new Cookie(oldName.substring(prelength, oldName.length()), cookieArray[i].getValue());
-					cookieMap.put(cookieArray[i].getName(), cookieArray[i]);
-					_cookie.put(cookieArray[i].getName(), cookieArray[i]);
+		HashMap<String, Object> allCookie = (HashMap<String, Object>) this.value.get("cookies");
+		HashMap<String, Object> _cookies = new HashMap<String, Object>();
+		if (requestCookies != null) {
+			for (int i = 0; i < requestCookies.length; i++) {
+				String oldName = requestCookies[i].getName();
+				if (oldName.length() > preLength && oldName.substring(0, preLength).equals(GlobalConfig.COOKIE_CONFIG.COOKIE_PRE)) {
+					requestCookies[i] = new Cookie(oldName.substring(preLength, oldName.length()), requestCookies[i].getValue());
+					allCookie.put(requestCookies[i].getName(), requestCookies[i]);
+					_cookies.put(requestCookies[i].getName(), requestCookies[i]);
 				}
 			}
 		}
-
 		// HashMap的key区分大小写，为了区分请求Cookie和[请求Cookie + 即将放置的Cookie + 即将设置过期的Cookie]
 		// HashMap是浅层拷贝
-		this.value.put("_cookie", _cookie);
+		this.value.put("_cookies", _cookies);
 
-		// 检查sessionid
-		Cookie sessionidCookie = (Cookie) cookieMap.get("sessionid");
-		if (sessionidCookie != null) {
-			this.value.put("sessionid", sessionidCookie.getValue());
-		} else {
-			this.value.put("sessionid", "");
-			sessionidCookie = new Cookie("sessionid", "");
-			cookieMap.put("sessionid", sessionidCookie);
-		}
-
-		if(cookieMap.get("saltkey") == null) {
+		// 检查saltkey
+		if(_cookies.get("saltkey") == null) {
 			this.setCookie("saltkey", Core.random(8), 86400 * 30, "", true);
 		}
 
-		this.value.put("authkey", MD5Helper.md5(GlobalConfig.SECURITY_AUTHKEY + ((Cookie) cookieMap.get("saltkey")).getValue()));
-
+		this.value.put("authkey", MD5Helper.md5(GlobalConfig.SECURITY_AUTHKEY + ((Cookie) allCookie.get("saltkey")).getValue()));
 	}
 
 	protected void initOutput() {
@@ -296,8 +285,8 @@ public class Application {
 			Map user = null;
 
 			// 确定类型的map可以更换Object类型到指定类型
-			HashMap<String, Object> cookie = (HashMap<String, Object>) this.value.get("cookie");
-			Cookie authCookie = (Cookie) cookie.get("auth");
+			HashMap _cookies = (HashMap) this.value.get("_cookies");
+			Cookie authCookie = (Cookie) _cookies.get("auth");
 			if(authCookie != null) {
 				// authcode加密势在必行
 				// cookie.value 特殊字符要处理
@@ -324,15 +313,15 @@ public class Application {
 			this.initGuest();
 		}
 
-		HashMap<String, Object> member = (HashMap<String, Object>)this.value.get("member");
+		HashMap member = (HashMap)this.value.get("member");
 		this.value.put("groupid", member.get("groupid"));
 
-		HashMap<String, Object> cookie = (HashMap<String, Object>) this.value.get("cookie");
-		if (cookie.get("lastvisit") == null) {
+		HashMap _cookies = (HashMap) this.value.get("_cookies");
+		if (_cookies.get("lastvisit") == null) {
 			member.put("lastvisit", this.TIMESTAMP - 3600);
 			Core.setCookie("lastvisit", Long.toString(this.TIMESTAMP - 3600), 86400 * 30);
 		} else {
-			member.put("lastvisit", ((Cookie)cookie.get("lastvisit")).getValue());
+			member.put("lastvisit", ((Cookie)_cookies.get("lastvisit")).getValue());
 		}
 
 		this.value.put("userid", member.get("userid"));
@@ -353,18 +342,35 @@ public class Application {
 	}
 
 	protected void initSession() {
+		// 注意, 控制器可能不要求初始化Session
+		// 检查sessionid
+		HashMap _cookies = (HashMap) this.value.get("_cookies");
+		Cookie requsetSessionidCookie = (Cookie) _cookies.get("sessionid");
+		if (requsetSessionidCookie != null) {
+			this.value.put("sessionid", requsetSessionidCookie.getValue());
+		} else {
+			// 这行冗余代码只是保持逻辑完整性，
+			this.value.put("sessionid", "");
+		}
+
 		if (this.initSession) {
-			this.session = new Session(null);
-
-			this.session.init(((Cookie) ((HashMap) this.value.get("cookie")).get("sessionid")).getValue(), (String) this.value.get("clientip"), (String) this.value.get("userid"));
-			this.value.put("sessionid", this.session.get("sessionid"));
-
-			if (this.value.get("sessionid") != null && !((String) this.value.get("sessionid")).equals(((Cookie) ((HashMap) this.value.get("cookie")).get("sessionid")).getValue())) {
-				// 有效时间一小时，改读配置和动态配置
-				Core.setCookie("sessionid", (String) this.value.get("sessionid"), 60 * 60);
+			String requestSessionid = null;
+			if (requsetSessionidCookie != null) {
+				requestSessionid = requsetSessionidCookie.getValue();
 			}
 
-			// session不自动续时，因为和登录cookie无关
+			// null 指 SessionConfig
+			this.session = new Session(null);
+			this.session.init(requestSessionid, (String) this.value.get("clientip"), (String) this.value.get("userid"));
+			this.value.put("sessionid", this.session.get("sessionid"));
+
+			// 自动续时
+			if (this.session.get("sessionid") != null && (requestSessionid==null || !((String) this.session.get("sessionid")).equals(requestSessionid)) ) {
+				// 有效时间一小时，修改读配置和动态配置
+				Core.setCookie("sessionid", (String) this.value.get("sessionid"), 60 * 60);
+				this.session.set("dateline", this.TIMESTAMP + 60 * 60);
+			}
+
 			// session表清理需要额外的线程或计划任务处理
 
 			this.session.set("lastactivity", this.TIMESTAMP);
@@ -429,6 +435,6 @@ public class Application {
 		cookie.setMaxAge(life);
 
 		this.response.addCookie(enCookie);
-		((HashMap<String, Object>)this.Global.get("cookie")).put(key, cookie);
+		((HashMap)this.Global.get("cookies")).put(key, cookie);
 	}
 }

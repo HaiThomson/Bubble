@@ -19,7 +19,7 @@ public class common_cache extends Table {
 		this.tableName = "common_cache";
 	}
 
-	public static int insert(String cachename, byte[] data) {
+	public static int insert(String cachename, byte[] data, int dateline) {
 		String sql = "REPLACE INTO " + DB.getRealTableName(common_cache.tableName) + " VALUES(?, ?, ?)";
 
 		SerialBlob blob= null;
@@ -29,6 +29,6 @@ public class common_cache extends Table {
 			ExceptionHandler.handling(e);
 		}
 
-		return DB.update(sql, cachename, blob, Container.app().TIMESTAMP);
+		return DB.update(sql, cachename, blob, dateline);
 	}
 }
