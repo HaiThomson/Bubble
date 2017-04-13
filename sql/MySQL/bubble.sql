@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.5.15, for Win64 (x86)
+Ôªø-- MySQL dump 10.13  Distrib 5.5.15, for Win64 (x86)
 --
 -- Host: localhost    Database: bubble
 -- ------------------------------------------------------
@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS `pre_common_cache`;
 CREATE TABLE `pre_common_cache` (
   `cachekey` varchar(255) NOT NULL DEFAULT '',
   `cachevalue` mediumblob NOT NULL,
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0',
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'ËøáÊúüÊó∂Èó¥',
   PRIMARY KEY (`cachekey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -90,6 +90,7 @@ DROP TABLE IF EXISTS `pre_common_session_struct`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pre_common_session_struct` (
   `sessionid` char(32) NOT NULL,
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'ËøáÊúüÊó∂Èó¥',
   `ip1` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `ip2` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `ip3` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -126,7 +127,7 @@ DROP TABLE IF EXISTS `pre_common_syscache`;
 CREATE TABLE `pre_common_syscache` (
   `cachename` varchar(32) NOT NULL,
   `cachedata` mediumblob NOT NULL,
-  `dateline` int(10) unsigned NOT NULL,
+  `dateline` int(10) unsigned NOT NULL COMMENT 'ËøáÊúüÊó∂Èó¥',
   PRIMARY KEY (`cachename`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -137,7 +138,7 @@ CREATE TABLE `pre_common_syscache` (
 
 LOCK TABLES `pre_common_syscache` WRITE;
 /*!40000 ALTER TABLE `pre_common_syscache` DISABLE KEYS */;
-INSERT INTO `pre_common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
+INSERT INTO `pre_common_syscache` VALUES ('setting','¬¨Ïö∞sr\0java.util.HashMap€ÅV`œÉ\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;¬ã‰ëå¬è#›Ç\0J\0valuexr\0java.lang.Number¬Ü¬¨¬ï¬î…Ç\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
 /*!40000 ALTER TABLE `pre_common_syscache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,4 +172,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-12 17:38:17
+-- Dump completed on 2017-04-13 11:26:20
