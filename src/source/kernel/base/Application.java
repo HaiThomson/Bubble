@@ -360,15 +360,15 @@ public class Application {
 			}
 
 			// null 指 SessionConfig
-			this.session = new Session(null);
+			this.session = new Session(GlobalConfig.SESSION_CONFIG);
 			this.session.init(requestSessionid, (String) this.value.get("clientip"), (String) this.value.get("userid"));
 			this.value.put("sessionid", this.session.get("sessionid"));
 
 			// 自动续时
 			if (this.session.get("sessionid") != null && (requestSessionid==null || !((String) this.session.get("sessionid")).equals(requestSessionid)) ) {
 				// 有效时间一小时，修改读配置和动态配置
-				Core.setCookie("sessionid", (String) this.value.get("sessionid"), 60 * 60);
-				this.session.set("dateline", this.TIMESTAMP + 60 * 60);
+				Core.setCookie("sessionid", (String) this.value.get("sessionid"), GlobalConfig.SESSION_CONFIG.LIFE);
+				this.session.set("dateline", this.TIMESTAMP + GlobalConfig.SESSION_CONFIG.LIFE);
 			}
 
 			// session表清理需要额外的线程或计划任务处理

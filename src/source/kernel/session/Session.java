@@ -31,7 +31,10 @@ public class Session extends Base {
 
 	public SessionProvider sessionProvider = null;
 
+	private SessionConfig sessionConfig = null;
+
 	public Session(SessionConfig config) {
+		this.sessionConfig = config;
 		sessionProvider = new DBStructSessionProvider(); // 修改为根据config，动态生成对象
 	}
 

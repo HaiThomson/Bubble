@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.log.LogConfig;
+import source.kernel.session.SessionConfig;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -67,6 +68,7 @@ public class GlobalConfig extends Base {
 
     //COOKIE设置
     public static CookieConfig COOKIE_CONFIG = new CookieConfig();
+    public static SessionConfig SESSION_CONFIG = new SessionConfig();
 
     public static String SECURITY_AUTHKEY = "asdfasfas";
 
