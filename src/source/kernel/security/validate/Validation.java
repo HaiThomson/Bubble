@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @since 8
+ * @since 1.8
  * @author Hai Thomson
  */
 public interface Validation {

@@ -18,6 +18,7 @@ package source.kernel.config;
 
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
+import source.kernel.db.DatabaseConfig;
 import source.kernel.log.LogConfig;
 import source.kernel.serialization.json.Json;
 import source.kernel.session.SessionConfig;
@@ -60,14 +61,12 @@ public class GlobalConfig extends Base {
     public static String CONNECTIONPOOL_TYPE = "c3p0";
     // 连接池配置文件位置
     public static String CONNECTIONPOOL_CONFIG_PATH = "/config/c3p0-config.xml";
-    // 内部数据库驱动抽象和JDBC无关.
-    // 改成名字如 MySQLDriver OracleDriver
-    public static String DBDRIVER_PATH = GlobalConfig.SOURCE_PATH + ".kernel.db.driver.MySQLDriver";
-    // 表名前缀，可为空字符串
-    public static String TABLE_PREFIX = "pre_";
 
-    //COOKIE设置
+    // DataBase配置
+    public static DatabaseConfig DATABASE_CONFIG = new DatabaseConfig();
+    // Cookie配置
     public static CookieConfig COOKIE_CONFIG = new CookieConfig();
+    // Session配置
     public static SessionConfig SESSION_CONFIG = new SessionConfig();
 
     public static String SECURITY_AUTHKEY = "asdfasfas";

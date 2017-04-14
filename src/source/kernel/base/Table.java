@@ -18,6 +18,7 @@ package source.kernel.base;
 
 import source.kernel.DB;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -46,50 +47,86 @@ public class Table extends Base {
     }
 
     public Map<String, Object> query(String primaryKey) {
-        return DB.queryFirstRow("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE " + DB.makeCondition(this.primaryKey, primaryKey));
+        try {
+            return DB.queryFirstRow("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE " + DB.makeCondition(this.primaryKey, primaryKey));
+        } catch (SQLException e) {
+            ExceptionHandler.handling(e);
+        }
+        return null;
     }
 
     public long count() {
-        long count = (long) DB.queryScalar("SELECT count(*) FROM " + DB.getRealTableName(this.tableName));
+        long count = 0;
+        try {
+            count = (long) DB.queryScalar("SELECT count(*) FROM " + DB.getRealTableName(this.tableName));
+        } catch (SQLException e) {
+            ExceptionHandler.handling(e);
+        }
         return count;
     }
 
     public int update(Map<String, Object> data, Object condition) {
         DB.makeCondition(this.primaryKey, data, "=");
         if(data != null) {
-            this.checkpk();
+            this.checkPrimaryKey();
             if (data.getClass().isArray()) {
-                int count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "="));
+                int count = 0;
+                try {
+                    count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "="));
+                } catch (SQLException e) {
+                    ExceptionHandler.handling(e);
+                }
                 return count;
             } else {
-                int count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "in"));
+                int count = 0;
+                try {
+                    count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "in"));
+                } catch (SQLException e) {
+                    ExceptionHandler.handling(e);
+                }
                 return count;
             }
         } else {
-            throw new RuntimeException("");
+            ExceptionHandler.handling(new NullPointerException("传入的数据为null"));
         }
+        return 0;
     }
 
     public int delete(Object object) {
         if(object != null) {
-            this.checkpk();
-            return DB.delete(this.tableName, DB.makeCondition(this.primaryKey, object));
+            this.checkPrimaryKey();
+            try {
+                return DB.delete(this.tableName, DB.makeCondition(this.primaryKey, object));
+            } catch (SQLException e) {
+                ExceptionHandler.handling(e);
+            }
         } else {
-            throw new RuntimeException("");
+            ExceptionHandler.handling(new NullPointerException("传入的数据为null"));
         }
+        return 0;
     }
 
     public Object insert(Map<String, Object> data) {
-        return DB.insert(this.tableName, data);
+        try {
+            return DB.insert(this.tableName, data);
+        } catch (SQLException e) {
+            ExceptionHandler.handling(e);
+        }
+        return null;
     }
 
     public Boolean truncate() {
-       return DB.executeCommand(DB.makeTruncate(this.tableName));
+        try {
+            return DB.executeCommand(DB.makeTruncate(this.tableName));
+        } catch (SQLException e) {
+            ExceptionHandler.handling(e);
+        }
+        return true;
     }
 
-    public void checkpk() {
-        if (this.primaryKey.equals("") && this.primaryKey == null) {
-
+    public void checkPrimaryKey() {
+        if (this.primaryKey == null && this.primaryKey.equals("")) {
+            ExceptionHandler.handling(new RuntimeException("Table的子类["+ this.getClass().getName() +"]未按规范定义有效的主键"));
         }
     }
 }

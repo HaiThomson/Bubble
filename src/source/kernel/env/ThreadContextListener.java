@@ -19,10 +19,12 @@ package source.kernel.env;
 import source.kernel.Core;
 import source.kernel.Container;
 import source.kernel.DB;
+import source.kernel.base.ExceptionHandler;
 
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.WebListener;
+import java.sql.SQLException;
 
 /**
  * @author Hai Thomson
@@ -53,9 +55,16 @@ public class ThreadContextListener implements ServletRequestListener {
 
     private static void closeDataBaseConnnection() {
         if (DB.getDriver() != null) {
-            // 如果开启事务并未提交，则提交,并关闭事务手动提交
-            // 收回资源
-            DB.closeConnection();
+            try {
+                if (!DB.isAutoCommit()) {
+                    DB.commitTransaction();
+                    // 默认开启连接池, 如果不设置[自动提交]则影响下次运行
+                    DB.closeTransaction();
+                }
+                DB.closeConnection();
+            } catch (SQLException sqlException) {
+                ExceptionHandler.handling(new SQLException("关闭数据库连接时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题"));
+            }
         }
     }
 

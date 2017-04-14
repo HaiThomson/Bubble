@@ -250,7 +250,7 @@ public class Application {
 
 	protected void initDB() {
 		try {
-			DB.init(GlobalConfig.DBDRIVER_PATH, GlobalConfig.TABLE_PREFIX);
+			DB.init(GlobalConfig.DATABASE_CONFIG);
 		} catch (SQLException e) {
 			ExceptionHandler.handling(e);
 		}

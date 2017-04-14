@@ -22,20 +22,18 @@ import source.kernel.db.dbutils.ResultSetHandler;
 import source.kernel.db.dbutils.handlers.*;
 import source.kernel.security.sql.SQLWatcher;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.*;
 
 /**
+ * 不建议使用坊间流传的"多数据库（表分组）"架构
+ * 如需多数据库连接支持，请继承本类并在Application初始化。
  * @author Hai Thomson
  */
 public class DataBase {
 
-    // 多数据库支持，增加driver列表.
-    // 增加getDriver(String dbName)
-    // C3P0增加命名空间方式
-    // 每个执行函数增加一个多参函数
-    // 思考再三，决定不支持多数据库开发模式！原因请转向博客
-    private static ThreadLocal threadDriver = new ThreadLocal();
+    protected static ThreadLocal threadDriver = new ThreadLocal();
 
     public static DataBaseDriver getDriver() {
         return (DataBaseDriver) threadDriver.get();
@@ -47,32 +45,63 @@ public class DataBase {
 
     /**
      *
-     * @param dbDriverPath
-     * @param tablepre
+     * @param config
      * @throws SQLException
+     * @since 1.7
      */
-    public static void init(String dbDriverPath, String tablepre) throws SQLException {
-        if ( DataBase.getDriver() == null || DataBase.getDriver().getConnection() == null || DataBase.getDriver().getConnection().isClosed()) {
-            try {
-                Class<?> dbDriverClass = Class.forName(dbDriverPath);
-                DataBase.threadDriver.set((DataBaseDriver) dbDriverClass.newInstance());
-                DataBase.getDriver().setTablePrefix(tablepre);
+    public static void init(DatabaseConfig config) throws SQLException {
+        try {
+            if ( DataBase.getDriver() == null || DataBase.getDriver().getConnection() == null || DataBase.getDriver().getConnection().isClosed()) {
+                Class<?> dbDriverClass = Class.forName(config.DBDRIVER_PATH);
+                DataBase.threadDriver.set(dbDriverClass.newInstance());
+                DataBase.getDriver().setTablePrefix(config.TABLE_PREFIX);
                 DataBase.getDriver().connect();
-            } catch (Exception e) {
-                ExceptionHandler.handling(e);
             }
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("没有加载到指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 原始信息: " + e.getMessage());
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage());
         }
+    }
+
+    /**
+     * 从DataBaseDriver取得数据库连接
+     * 请在当且仅当需要特殊操作时调用
+     * @return
+     */
+    public static Connection getConnection() {
+        return DataBase.getDriver().getConnection();
     }
 
     /**
      * connection.close()；后connection并不会指向null。
      * 多次调用不报错。不建议多次调用。
      */
-    public static void closeConnection() {
+    public static void closeConnection() throws SQLException {
         DataBase.getDriver().closeConnection();
     }
 
-    public static String getDatabaseVersion() {
+    public static void beginTransaction() throws SQLException {
+        DataBase.getDriver().beginTransaction();
+    }
+
+    public static void closeTransaction() throws SQLException {
+        DataBase.getDriver().closeTransaction();
+    }
+
+    public static boolean isAutoCommit() throws SQLException {
+        return DataBase.getDriver().isAutoCommit();
+    }
+
+    public static void commitTransaction() throws SQLException {
+        DataBase.getDriver().commitTransaction();
+    }
+
+    public static void rollBackTransaction() throws SQLException {
+        DataBase.getDriver().rollBackTransaction();
+    }
+
+    public static String getDatabaseVersion() throws SQLException {
         return DataBase.getDriver().getDatabaseVersion();
     }
 
@@ -85,22 +114,22 @@ public class DataBase {
      * 返回是否执行成功
      * @param command
      */
-    public static boolean executeCommand(String command) {
+    public static boolean executeCommand(String command) throws SQLException {
         Connection connection = DataBase.getDriver().getConnection();
         Statement statement = null;
         try {
             statement = connection.createStatement();
             return statement.execute(command);
         } catch (SQLException e) {
-            e.printStackTrace();
+            DataBase.recodeSQLException(e, command);
         } finally {
             try {
                 statement.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                DataBase.recordCloseStatementException(e);
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -110,13 +139,13 @@ public class DataBase {
      * @param params
      * @return
      */
-    public static int[] batch(String sql, Object[][] params) {
+    public static int[] batch(String sql, Object[][] params) throws SQLException {
         if (sql == null) {
-            //throw new SQLException("Null SQL statement");
+            throw new SQLException("Null SQL statement");
         }
 
         if (params == null) {
-            //throw new SQLException("Null parameters. If parameters aren't need, pass an empty array.");
+            throw new SQLException("Null parameters. If parameters aren't need, pass an empty array.");
         }
 
         PreparedStatement stmt = null;
@@ -137,7 +166,7 @@ public class DataBase {
             try {
                 DbUtils.close(stmt);
             } catch (SQLException e) {
-                e.printStackTrace();
+                DataBase.recordCloseStatementException(e);
             }
         }
 
@@ -150,17 +179,17 @@ public class DataBase {
      * @param params
      * @return
      */
-    public static List<Object> insertBatch(String sql, Object[][] params) {
+    public static List<Object> insertBatch(String sql, Object[][] params) throws SQLException {
         return insertBatch(sql, new ColumnListHandler<Object>(1), params);
     }
 
-    private static <T> T insertBatch(String sql, ResultSetHandler<T> rsh, Object[][] params) {
+    private static <T> T insertBatch(String sql, ResultSetHandler<T> rsh, Object[][] params) throws SQLException {
         if (sql == null) {
-            //throw new SQLException("Null SQL statement");
+            throw new SQLException("Null SQL statement");
         }
 
         if (params == null) {
-            //throw new SQLException("Null parameters. If parameters aren't need, pass an empty array.");
+            throw new SQLException("Null parameters. If parameters aren't need, pass an empty array.");
         }
 
         Connection connection = DataBase.getDriver().getConnection();
@@ -183,7 +212,7 @@ public class DataBase {
             try {
                 DbUtils.close(stmt);
             } catch (SQLException e) {
-                e.printStackTrace();
+                DataBase.recordCloseStatementException(e);
             }
         }
 
@@ -195,7 +224,7 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static Object insert(String sql) {
+    public static Object insert(String sql) throws SQLException {
         return DataBase.insert(sql, new ScalarHandler(), (Object[]) null);
     }
 
@@ -205,17 +234,17 @@ public class DataBase {
      * @param params
      * @return
      */
-    public static Object insert(String sql, Object... params) {
+    public static Object insert(String sql, Object... params) throws SQLException {
         return DataBase.insert(sql, new ScalarHandler(), params);
     }
 
-    private static <T> T insert(String sql, ResultSetHandler<T> rsh, Object... params) {
+    private static <T> T insert(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
         if (sql == null) {
-            //throw new SQLException("Null SQL statement");
+            throw new SQLException("Null SQL statement");
         }
 
         if (rsh == null) {
-            //throw new SQLException("Null ResultSetHandler");
+            throw new SQLException("Null ResultSetHandler");
         }
 
         Connection connection = DataBase.getDriver().getConnection();
@@ -234,14 +263,14 @@ public class DataBase {
             try {
                 DbUtils.close(stmt);
             } catch (SQLException e) {
-                e.printStackTrace();
+                DataBase.recordCloseStatementException(e);
             }
         }
 
         return generatedKeys;
     }
 
-    public static Object insert(String table, Map<String, Object> data) {
+    public static Object insert(String table, Map<String, Object> data) throws SQLException {
         String sql = DataBase.getDriver().makeInsert(table, data);
         return DataBase.insert(sql);
     }
@@ -251,17 +280,17 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static int update(String sql) {
+    public static int update(String sql) throws SQLException {
         return DataBase.update(sql, (Object[]) null);
     }
 
-    public static int update(String sql, Object param) {
+    public static int update(String sql, Object param) throws SQLException {
         return DataBase.update(sql, new Object[]{param});
     }
 
-    public static int update(String sql, Object... params) {
+    public static int update(String sql, Object... params) throws SQLException {
         if (sql == null) {
-            //throw new SQLException("Null SQL statement");
+            throw new SQLException("Null SQL statement");
         }
 
         Connection connection = DataBase.getDriver().getConnection();
@@ -275,53 +304,52 @@ public class DataBase {
 
         } catch (SQLException e) {
             DataBase.recodeSQLException(e, sql, params);
-
         } finally {
             try {
                 DbUtils.close(stmt);
             } catch (SQLException e) {
-                e.printStackTrace();
+                DataBase.recordCloseStatementException(e);
             }
         }
 
         return rows;
     }
 
-    public static int update(String table, Map<String, Object> data, Map<String, Object> condition) {
+    public static int update(String table, Map<String, Object> data, Map<String, Object> condition) throws SQLException {
         String sql = DataBase.getDriver().makeUpdate(table, data, condition);
         return DataBase.update(sql);
     }
 
-    public static int update(String table, Map<String, Object> data, String condition) {
+    public static int update(String table, Map<String, Object> data, String condition) throws SQLException {
         String sql = DataBase.getDriver().makeUpdate(table, data, condition);
         return DataBase.update(sql);
     }
 
-    public static int delete(String table, Map<String, Object> condition) {
+    public static int delete(String table, Map<String, Object> condition) throws SQLException {
         String sql = DataBase.getDriver().makeDelete(table, condition);
         return DataBase.update(sql);
     }
 
-    public static int delete(String table, String condition) {
+    public static int delete(String table, String condition) throws SQLException {
         String sql = DataBase.getDriver().makeDelete(table, condition);
         return DataBase.update(sql);
     }
 
-    //查询不到返回null
     /**
      * 查询并取得结果。结果形式为Map<Object, Map<String, Object>>
+     * 查询不到返回null
      * @param sql
      * @return
      */
-    public static Map<Object, Map<String, Object>> queryAll(String sql) {
+    public static Map<Object, Map<String, Object>> queryAll(String sql) throws SQLException {
         return DataBase.query(sql, new KeyedHandler<Object>(), (Object[]) null);
     }
 
-    public static Map<Object, Map<String, Object>> queryAll(String sql, Object param) {
+    public static Map<Object, Map<String, Object>> queryAll(String sql, Object param) throws SQLException {
         return DataBase.query(sql, new KeyedHandler<Object>(), new Object[]{param});
     }
 
-    public static Map<Object, Map<String, Object>> queryAll(String sql, Object... params) {
+    public static Map<Object, Map<String, Object>> queryAll(String sql, Object... params) throws SQLException {
         return DataBase.query(sql, new KeyedHandler<Object>(), params);
     }
 
@@ -330,15 +358,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static List<Map<String, Object>> queryMapList(String sql) {
+    public static List<Map<String, Object>> queryMapList(String sql) throws SQLException {
         return DataBase.query(sql, new MapListHandler(), (Object[]) null);
     }
 
-    public static List<Map<String, Object>> queryMapList(String sql, Object param) {
+    public static List<Map<String, Object>> queryMapList(String sql, Object param) throws SQLException {
         return DataBase.query(sql, new MapListHandler(), new Object[]{param});
     }
 
-    public static List<Map<String, Object>> queryMapList(String sql, Object... params) {
+    public static List<Map<String, Object>> queryMapList(String sql, Object... params) throws SQLException {
         return DataBase.query(sql, new MapListHandler(), params);
     }
 
@@ -348,15 +376,15 @@ public class DataBase {
      * @param columnIndex
      * @return
      */
-    public static List<Object> queryColumn(String sql, int columnIndex) {
+    public static List<Object> queryColumn(String sql, int columnIndex) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnIndex), (Object[]) null);
     }
 
-    public static List<Object> queryColumn(String sql, int columnIndex, Object param) {
+    public static List<Object> queryColumn(String sql, int columnIndex, Object param) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnIndex), new Object[]{param});
     }
 
-    public static List<Object> queryColumn(String sql, int columnIndex, Object... params) {
+    public static List<Object> queryColumn(String sql, int columnIndex, Object... params) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnIndex), params);
     }
 
@@ -365,15 +393,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static List<Object> queryColumn(String sql, String columnName) {
+    public static List<Object> queryColumn(String sql, String columnName) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnName), (Object[]) null);
     }
 
-    public static List<Object> queryColumn(String sql, String columnName, Object param) {
+    public static List<Object> queryColumn(String sql, String columnName, Object param) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnName), new Object[]{param});
     }
 
-    public static List<Object> queryColumn(String sql, String columnName, Object... params) {
+    public static List<Object> queryColumn(String sql, String columnName, Object... params) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(columnName), params);
     }
 
@@ -382,15 +410,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static List<Object> queryFirstColumn(String sql) {
+    public static List<Object> queryFirstColumn(String sql) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(1), (Object[]) null);
     }
 
-    public static List<Object> queryFirstColumn(String sql, Object param) {
+    public static List<Object> queryFirstColumn(String sql, Object param) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(1), new Object[]{param});
     }
 
-    public static List<Object> queryFirstColumn(String sql, Object... params) {
+    public static List<Object> queryFirstColumn(String sql, Object... params) throws SQLException {
         return DataBase.query(sql, new ColumnListHandler<>(1), params);
     }
 
@@ -399,15 +427,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static Map<String, Object> queryFirstRow(String sql) {
+    public static Map<String, Object> queryFirstRow(String sql) throws SQLException {
         return DataBase.query(sql, new MapHandler(), (Object[]) null);
     }
 
-    public static Map<String, Object> queryFirstRow(String sql, Object param) {
+    public static Map<String, Object> queryFirstRow(String sql, Object param) throws SQLException {
         return DataBase.query(sql, new MapHandler(), new Object[]{param});
     }
 
-    public static Map<String, Object> queryFirstRow(String sql, Object... params) {
+    public static Map<String, Object> queryFirstRow(String sql, Object... params) throws SQLException {
         return DataBase.query(sql, new MapHandler(), params);
     }
 
@@ -416,15 +444,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static Object queryScalar(String sql) {
+    public static Object queryScalar(String sql) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(), (Object[]) null);
     }
 
-    public static Object queryScalar(String sql, Object param) {
+    public static Object queryScalar(String sql, Object param) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(), new Object[]{param});
     }
 
-    public static Object queryScalar(String sql, Object... params) {
+    public static Object queryScalar(String sql, Object... params) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(), params);
     }
 
@@ -433,15 +461,15 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static Object queryScalar(String sql, int columnIndex) {
+    public static Object queryScalar(String sql, int columnIndex) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnIndex), (Object[]) null);
     }
 
-    public static Object queryScalar(String sql, int columnIndex, Object param) {
+    public static Object queryScalar(String sql, int columnIndex, Object param) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnIndex), new Object[]{param});
     }
 
-    public static Object queryScalar(String sql, int columnIndex, Object... params) {
+    public static Object queryScalar(String sql, int columnIndex, Object... params) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnIndex), params);
     }
 
@@ -450,19 +478,23 @@ public class DataBase {
      * @param sql
      * @return
      */
-    public static Object queryScalar(String sql, String columnName) {
+    public static Object queryScalar(String sql, String columnName) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnName), (Object[]) null);
     }
 
-    public static Object queryScalar(String sql, String columnName, Object param) {
+    public static Object queryScalar(String sql, String columnName, Object param) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnName), new Object[]{param});
     }
 
-    public static Object queryScalar(String sql, String columnName, Object... params) {
+    public static Object queryScalar(String sql, String columnName, Object... params) throws SQLException {
         return DataBase.query(sql, new ScalarHandler<Object>(columnName), params);
     }
 
-    private static <T> T query(String sql, ResultSetHandler<T> rsh, Object... params) {
+    private static <T> T query(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
+        if (sql == null) {
+            throw new SQLException("Null SQL statement");
+        }
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         T result = null;
@@ -563,7 +595,7 @@ public class DataBase {
      *            value to pass in.
      *
      */
-    public static void recodeSQLException(SQLException cause, String sql, Object... params) {
+    protected static void recodeSQLException(SQLException cause, String sql, Object... params) throws SQLException {
         String causeMessage = cause.getMessage();
         if (causeMessage == null) {
             causeMessage = "";
@@ -580,8 +612,7 @@ public class DataBase {
             msg.append(Arrays.deepToString(params));
         }
 
-        //错误应该被完整的记录，而不是单纯的打印或者输出到日志。
-        System.out.println(msg.toString() + cause.getSQLState() + cause.getErrorCode());
+        throw new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode());
     }
 
     /**
@@ -592,7 +623,7 @@ public class DataBase {
      *            exception when it's rethrown.
      *
      */
-    public static void recordCloseResultSetException(SQLException cause) {
+    protected static void recordCloseResultSetException(SQLException cause) throws SQLException {
         String causeMessage = cause.getMessage();
         if (causeMessage == null) {
             causeMessage = "";
@@ -601,8 +632,7 @@ public class DataBase {
 
         msg.append("ResultSet没有被正确关闭");
 
-        //错误应该被完整的记录，而不是单纯的打印或者输出到日志。
-        System.out.println(msg.toString() + cause.getSQLState() + cause.getErrorCode());
+        ExceptionHandler.handling(new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode()), ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
     }
 
     /**
@@ -613,7 +643,7 @@ public class DataBase {
      *            exception when it's rethrown.
      *
      */
-    public static void recordCloseStatementException(SQLException cause) {
+    protected static void recordCloseStatementException(SQLException cause) throws SQLException {
         String causeMessage = cause.getMessage();
         if (causeMessage == null) {
             causeMessage = "";
@@ -622,29 +652,7 @@ public class DataBase {
 
         msg.append("Statement没有被正确关闭");
 
-        //错误应该被完整的记录，而不是单纯的打印或者输出到日志。
-        System.out.println(msg.toString() + cause.getSQLState() + cause.getErrorCode());
-    }
-
-    /**
-     * 构造完整错误信息并记录
-     *
-     * @param cause
-     *            The original exception that will be chained to the new
-     *            exception when it's rethrown.
-     *
-     */
-    public static void recordCloseConnectionException(SQLException cause) {
-        String causeMessage = cause.getMessage();
-        if (causeMessage == null) {
-            causeMessage = "";
-        }
-        StringBuffer msg = new StringBuffer(causeMessage);
-
-        msg.append("Statement没有被正确关闭");
-
-        //错误应该被完整的记录，而不是单纯的打印或者输出到日志。
-        System.out.println(msg.toString() + cause.getSQLState() + cause.getErrorCode());
+        ExceptionHandler.handling(new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode()), ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
     }
 
     /**

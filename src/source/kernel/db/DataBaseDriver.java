@@ -17,6 +17,7 @@
 package source.kernel.db;
 
 import source.kernel.base.Base;
+import source.kernel.db.pool.ConnectionPooling;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,17 +28,80 @@ import java.util.Map;
  */
 public abstract class DataBaseDriver extends Base {
 
-    protected abstract void setTablePrefix(String tablepre);
+    protected String tablepre = "";
+    protected Connection connection = null;
 
-    protected abstract void connect() throws SQLException;
+    protected void setTablePrefix(String tablepre) {
+        this.tablepre = tablepre;
+    }
 
-    protected abstract Connection getConnection();
+    protected void connect() throws SQLException {
+        this.connection =  ConnectionPooling.getConnection();
+    }
 
-    protected abstract void closeConnection();
+    protected Connection getConnection() {
+        return this.connection;
+    }
 
-    protected abstract String getDatabaseVersion();
+    /**
+     * connection.close() 后connection并不会指向null。
+     * 多次调用不报错。
+     */
+    protected void closeConnection() throws SQLException {
+        this.connection.close();
+        // connection.close()后connection并不会指向null.
+        // 为DataBase下次初始化时提供稳定的状态信息。
+        this.connection = null;
+    }
 
-    protected abstract String getRealTableName(String table);
+    /**
+     * 获取数据版本号
+     * @return
+     */
+    protected String getDatabaseVersion() throws SQLException {
+        return this.connection.getMetaData().getDatabaseProductVersion();
+    }
+
+    /**
+     * 获取正确带前缀的表名，转换数据库句柄
+     * @param tablename
+     */
+    protected String getRealTableName(String tablename) {
+        return this.tablepre + tablename;
+    }
+
+
+    protected void beginTransaction() throws SQLException {
+        if(connection.getAutoCommit()) {
+            this.connection.setAutoCommit(false);
+        }
+    }
+
+    public void closeTransaction() throws SQLException {
+        if(!this.connection.getAutoCommit()) {
+            this.connection.setAutoCommit(true);
+        }
+    }
+
+    protected boolean isAutoCommit() throws SQLException {
+        if(this.connection.getAutoCommit()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected void commitTransaction() throws SQLException {
+        if(!this.connection.getAutoCommit()){
+            this.connection.commit();
+        }
+    }
+
+    protected void rollBackTransaction() throws SQLException {
+        if(!this.connection.getAutoCommit()){
+            this.connection.rollback();
+        }
+    }
 
     protected abstract String makeInsert(String table, Map<String, Object> data);
 
@@ -60,4 +124,5 @@ public abstract class DataBaseDriver extends Base {
     protected abstract String makeLimit(int m, int n);
 
     protected abstract String implode(Map<String, Object> data, String glue);
+
 }

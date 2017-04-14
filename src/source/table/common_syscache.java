@@ -21,7 +21,6 @@ public class common_syscache extends Table {
 		this.primaryKey = "cachename";
 	}
 
-	// 类型是自动推断出来的，是不是关联数组Map
 	public static Object insert(String cachename, byte[] data, int  dateline) {
 		String sql = "REPLACE INTO " + DB.getRealTableName(common_syscache.tableName) + " VALUES(?, ?, ?)";
 
@@ -32,10 +31,20 @@ public class common_syscache extends Table {
 			ExceptionHandler.handling(e);
 		}
 
-		return DB.insert(sql, cachename, blob, dateline);
+		try {
+			return DB.insert(sql, cachename, blob, dateline);
+		} catch (SQLException e) {
+			ExceptionHandler.handling(e);
+		}
+		return null;
 	}
 
 	public Map fetchAll() {
-		return DB.queryAll("SELECT * FROM " + DB.getRealTableName(common_syscache.tableName));
+		try {
+			return DB.queryAll("SELECT * FROM " + DB.getRealTableName(common_syscache.tableName));
+		} catch (SQLException e) {
+			ExceptionHandler.handling(e);
+		}
+		return null;
 	}
 }

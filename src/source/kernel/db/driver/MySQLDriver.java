@@ -17,10 +17,7 @@
 package source.kernel.db.driver;
 
 import source.kernel.db.DataBaseDriver;
-import source.kernel.db.pool.ConnectionPooling;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,70 +27,14 @@ import java.util.Set;
  * 操作MySQL的通用驱动。
  * 反射必须是有访问权限的类
  *
- * @since 7
+ * @since 1.7
  * @author Hai Thomson
  */
 public class MySQLDriver extends DataBaseDriver {
 
-	private String tablepre = "";
-	private Connection connection = null;
-
-	@Override
-	protected void setTablePrefix(String tablepre) {
-		this.tablepre = tablepre;
-	}
-
-	@Override
-	protected void connect() throws SQLException {
-		connection =  ConnectionPooling.getConnection();
-	}
-
-	@Override
-	protected Connection getConnection() {
-		return this.connection;
-	}
-
-	/**
-	 * connection.close() 后connection并不会指向null。
-	 * 多次调用不报错。
-	 */
-	@Override
-	protected void closeConnection() {
-		try {
-			connection.close();
-			// connection.close()后connection并不会指向null.
-			// 为DataBase初始化时提供稳定的状态信息。
-			connection = null;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 获取数据版本号，如出现问题则返回 ""
-	 * @return
-	 */
-	@Override
-	protected String getDatabaseVersion() {
-		try {
-			return connection.getMetaData().getDatabaseProductVersion();
-		} catch (SQLException e) {
-			return "";
-		}
-	}
-
-	/**
-	 * 获取正确带前缀的表名，转换数据库句柄
-	 * @param tablename
-	 */
-	@Override
-	protected String getRealTableName(String tablename) {
-		return tablepre + tablename;
-	}
-
 	@Override
 	protected String makeInsert(String table, Map<String, Object> data) {
-		//return "INSERT INTO " + table + this.implodeInsert(data);
+		// return "INSERT INTO " + table + this.implodeInsert(data);
 		return "INSERT INTO " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
 	}
 

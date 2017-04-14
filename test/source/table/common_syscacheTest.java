@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class common_syscacheTest {
 	public static void main(String[] args) throws SQLException {
 		ConnectionPooling.init("c3p0", "classloader:" + ("./config/c3p0-config.xml"));
-		DB.init(GlobalConfig.DBDRIVER_PATH, GlobalConfig.TABLE_PREFIX);
+		DB.init(GlobalConfig.DATABASE_CONFIG);
 		common_syscache common_syscache = (source.table.common_syscache) Container.table("common_syscache");
 
 		HashMap<String, Object> setting = new HashMap<String, Object>();

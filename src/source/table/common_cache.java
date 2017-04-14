@@ -29,6 +29,11 @@ public class common_cache extends Table {
 			ExceptionHandler.handling(e);
 		}
 
-		return DB.update(sql, cachename, blob, dateline);
+		try {
+			return DB.update(sql, cachename, blob, dateline);
+		} catch (SQLException e) {
+			ExceptionHandler.handling(e);
+		}
+		return 0;
 	}
 }

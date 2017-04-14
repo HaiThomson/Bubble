@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Servlet Filter实现控制器实验
@@ -76,9 +77,16 @@ public class MemberFilter implements Filter {
 
 	private void closeDataBaseConnnection() {
 		if (DB.getDriver() != null) {
-			// 如果开启事务并未提交，则提交,并关闭事务手动提交
-			// 收回资源
-			DB.closeConnection();
+			try {
+				if (!DB.isAutoCommit()) {
+					DB.commitTransaction();
+					// 默认开启连接池, 如果不设置[自动提交]则影响下次运行
+					DB.closeTransaction();
+				}
+				DB.closeConnection();
+			} catch (SQLException sqlException) {
+				ExceptionHandler.handling(new SQLException("关闭数据库连接时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题"));
+			}
 		}
 	}
 

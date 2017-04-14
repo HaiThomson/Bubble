@@ -18,7 +18,9 @@ package source.kernel.base;
 
 import source.kernel.config.GlobalConfig;
 import source.kernel.DB;
+import source.kernel.log.Logger;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -48,14 +50,22 @@ public class ExceptionHandler {
 		}
 
 		if (log) {
-			System.out.println(new Date().toString() + " ERROR [" + Thread.currentThread().getName() + "] " + e.getClass().getName() + ": " + e.getMessage());
+			Logger.error(e.getClass().getName() + ": " + e.getMessage());
 		}
 
 		if (halt) {
 			if (DB.getDriver() != null) {
 				// 如果开启了事务，则回滚.并关闭事务手动提交
 				// 收回资源
-				DB.closeConnection();
+				try {
+					if (!DB.isAutoCommit()) {
+						DB.rollBackTransaction();
+						DB.closeTransaction();
+					}
+					DB.closeConnection();
+				} catch (SQLException sqlException) {
+					throw new RuntimeException("ExceptionHandler 执行数据库操作时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题");
+				}
 			}
 
 			throw new RuntimeException("发生 [" + e.getClass().getName() + ": " + e.getMessage() + "] 问题");

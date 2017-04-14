@@ -18,7 +18,6 @@ package source.kernel.session.struct;
 
 import source.kernel.Container;
 import source.kernel.Core;
-import source.kernel.session.SessionConfig;
 import source.kernel.session.SessionProvider;
 import source.table.common_session_struct;
 
@@ -120,7 +119,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	@Override
 	public long delete() {
 		this.value = null;
-		return this.table.delete_by_session(this.value, 3600, 60);
+		return this.table.deleteBySession(this.value, 3600, 60);
 	}
 
 	@Override
