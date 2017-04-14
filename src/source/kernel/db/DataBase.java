@@ -20,9 +20,7 @@ import source.kernel.base.ExceptionHandler;
 import source.kernel.db.dbutils.DbUtils;
 import source.kernel.db.dbutils.ResultSetHandler;
 import source.kernel.db.dbutils.handlers.*;
-import source.kernel.security.sql.SQLWatcher;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.*;
 
@@ -44,12 +42,13 @@ public class DataBase {
     }
 
     /**
-     *
+     * 异常处理不能单纯谈责任归属
+     * 方法抛异常会生孩子，而且越生越多！
      * @param config
      * @throws SQLException
-     * @since 1.7
      */
-    public static void init(DatabaseConfig config) throws SQLException {
+    public static void init(DatabaseConfig config) {
+        // 异常处理写法模板
         try {
             if ( DataBase.getDriver() == null || DataBase.getDriver().getConnection() == null || DataBase.getDriver().getConnection().isClosed()) {
                 Class<?> dbDriverClass = Class.forName(config.DBDRIVER_PATH);
@@ -58,9 +57,14 @@ public class DataBase {
                 DataBase.getDriver().connect();
             }
         } catch (ClassNotFoundException e) {
-            throw new SQLException("没有加载到指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 原始信息: " + e.getMessage());
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage());
+            // 传递相同类型异常是为了让handling方法获得异常类型.转发Exception破坏了信息完整性
+            ExceptionHandler.handling(new ClassNotFoundException("没有加载到指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 原始信息: " + e.getMessage()));
+        } catch (IllegalAccessException e) {
+            ExceptionHandler.handling(new IllegalAccessException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
+        } catch (InstantiationException e) {
+            ExceptionHandler.handling(new InstantiationException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
+        } catch (SQLException e) {
+            ExceptionHandler.handling(new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
         }
     }
 

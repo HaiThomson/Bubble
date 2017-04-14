@@ -1,4 +1,4 @@
-package source.kernel.security.sql;
+package source.kernel.db;
 
 public class SQLWatcher {
 
