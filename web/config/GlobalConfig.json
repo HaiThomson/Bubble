@@ -12,6 +12,7 @@
 
   "LOG_CONFIG" : {
     "LEVEL" : "ALL",
+    "DATE_PATTERN" : "[yyyy-MM-dd HH:mm:ss.S z]",
     "STEP_TIME" : "1000",
     "STEP_LINE" : "100"
   }

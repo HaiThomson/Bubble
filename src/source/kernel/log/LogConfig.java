@@ -23,6 +23,11 @@ import source.kernel.base.Base;
  */
 public class LogConfig extends Base {
 	public String   LEVEL = "ALL";
+	public String   FILE_PATH = "./";
+	public String   FILE_NAME = "log";
+	public String   FILE_NAME_WITH_DATE = "yyyy-MM-dd";
+	public Boolean	APPEND = true;
+	public String   DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss.S z]";
 	// 每隔STEP_TIME毫秒记录一次
 	public Long     STEP_TIME = 1L * 1000L;
 	// 每次记录STEP_LINE行

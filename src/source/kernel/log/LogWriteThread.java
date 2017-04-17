@@ -17,6 +17,7 @@
 package source.kernel.log;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Hai Thomson
@@ -31,8 +32,6 @@ public class LogWriteThread extends Thread {
 
 	protected static long STEP_TIME = 1L * 1000L;
 	protected static int STEP_LINE = 100;
-
-	protected static SimpleDateFormat dateFormat = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss.S z]");
 
 	public void run() {
 		while (true) {

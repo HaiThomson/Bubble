@@ -18,6 +18,7 @@ package source.kernel.log;
 
 import source.kernel.helper.ArraysHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -27,7 +28,7 @@ public class Logger {
 
 	public static boolean initated = false;
 
-	public static String level = "ALL";
+	protected static LogConfig LOGCONFIG = new LogConfig();
 
 	protected static final String[] OPTIONAL_LEVEL = {"ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
 
@@ -37,7 +38,10 @@ public class Logger {
 
 	public static void init(LogConfig config) {
 		if (!Logger.initated) {
-			Logger.level = config.LEVEL;
+			Logger.LOGCONFIG = config;
+
+			LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
+
 			LogWriteThread.STEP_TIME = config.STEP_TIME;
 			LogWriteThread.STEP_TIME = config.STEP_LINE;
 
@@ -50,6 +54,16 @@ public class Logger {
 
 			Logger.initated = true;
 		}
+	}
+
+	// 运行期间,动态更改配置
+	public static void setLogConfig(LogConfig config) {
+		Logger.LOGCONFIG = config;
+
+		LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
+
+		LogWriteThread.STEP_TIME = config.STEP_TIME;
+		LogWriteThread.STEP_TIME = config.STEP_LINE;
 	}
 
 	public static void destory() {
@@ -132,7 +146,7 @@ public class Logger {
 	}
 
 	protected static void add(LogNode log) {
-		if (ArraysHelper.getSubscript(Logger.OPTIONAL_LEVEL, log.level) >= ArraysHelper.getSubscript(Logger.OPTIONAL_LEVEL, Logger.level)) {
+		if (ArraysHelper.getSubscript(Logger.OPTIONAL_LEVEL, log.level) >= ArraysHelper.getSubscript(Logger.OPTIONAL_LEVEL, Logger.LOGCONFIG.LEVEL)) {
 			LOG_QUEUE.add(log);
 		}
 	}
