@@ -185,7 +185,7 @@ public class DataBase {
         return insertBatch(sql, new ColumnListHandler<Object>(1), params);
     }
 
-    private static <T> T insertBatch(String sql, ResultSetHandler<T> rsh, Object[][] params) throws SQLException {
+    public static <T> T insertBatch(String sql, ResultSetHandler<T> rsh, Object[][] params) throws SQLException {
         if (sql == null) {
             throw new SQLException("Null SQL statement");
         }
@@ -236,7 +236,7 @@ public class DataBase {
         return DataBase.insert(sql, new ScalarHandler(), params);
     }
 
-    private static <T> T insert(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
+    public static <T> T insert(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
         if (sql == null) {
             throw new SQLException("Null SQL statement");
         }
@@ -491,7 +491,7 @@ public class DataBase {
      * @return
      * @throws SQLException
      */
-    private static <T> T query(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
+    public static <T> T query(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
         if (sql == null) {
             throw new SQLException("Null SQL statement");
         }

@@ -37,7 +37,7 @@ public class common_session_general extends Table {
 		return null;
 	}
 
-	public long delete_by_session(Map<String, Object> value, int onlinehold, int i) {
+	public long deleteBySession(Map<String, Object> value, int onlinehold, int i) {
 		return 0;
 	}
 
