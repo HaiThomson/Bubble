@@ -3,7 +3,7 @@ package source.kernel.log;
 import java.util.Date;
 
 /**
- * Created by Hai on 2017/4/9.
+ * @author Hai Thomson
  */
 class LoggerWriter {
 	public static void writeLog(LogNode log) {

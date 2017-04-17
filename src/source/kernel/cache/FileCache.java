@@ -137,7 +137,7 @@ public class FileCache {
 				cacheNodeFileChannel.close();
 				cacheNodeFile.close();
 			} catch (IOException ue) {
-				throw new RuntimeException("Error closing resource " + ue.getMessage());
+				throw new CacheException("Error closing resource " + ue.getMessage());
 			}
 			FileCache.delete(cachename);
 			throw new CacheException("file is null " + e.getMessage());
@@ -146,7 +146,7 @@ public class FileCache {
 				cacheNodeFileChannel.close();
 				cacheNodeFile.close();
 			} catch (IOException ue) {
-				throw new RuntimeException("Error closing resource " + ue.getMessage());
+				throw new CacheException("Error closing resource " + ue.getMessage());
 			}
 			throw new CacheException("FileCache-2 The cache file was deleted while writing the file. Incentives may be highly concurrent " + e.getMessage());
 		}
@@ -246,7 +246,7 @@ public class FileCache {
 				cacheNodeFileChannel.close();
 				cacheNodeFile.close();
 			} catch (IOException ue) {
-				throw new RuntimeException("Error closing resource " + ue.getMessage());
+				throw new CacheException("Error closing resource " + ue.getMessage());
 			}
 			FileCache.delete(cachename);
 			throw new CacheException("file is null " + e.getMessage());
@@ -255,7 +255,7 @@ public class FileCache {
 				cacheNodeFileChannel.close();
 				cacheNodeFile.close();
 			} catch (IOException ue) {
-				throw new RuntimeException("Error closing resource " + ue.getMessage());
+				throw new CacheException("Error closing resource " + ue.getMessage());
 			}
 			FileCache.delete(cachename);
 			throw new CacheException("An IO error occurred while reading the file. Incentives may be highly concurrent " + e.getMessage());

@@ -17,8 +17,8 @@ public class Demoindex {
      * @throws ServletException
      * @throws IOException
      */
-    public static void run() throws ServletException, IOException {
-        Container.app().Global.put("count", ((common_session_struct)(Container.table("common_session_struct"))).count());
+    public static void run() throws Exception {
+        Container.app().Global.put("count", ((common_session_struct)(Container.table("common_session_struct"))).countAll());
 
         Core.forward("/demo/index.jsp");
     }

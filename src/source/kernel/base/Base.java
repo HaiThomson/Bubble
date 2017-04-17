@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 /**
  * @author Hai Thomson
  */
-public class Base {
+public abstract class Base {
 
 	public boolean canGetProperty(String propertyName) {
 		try {
@@ -75,11 +75,14 @@ public class Base {
 	 * @param methodName 方法全名
 	 * @return 运行结果
 	 */
-	public Object call(String methodName, Object... params) throws RuntimeException {
+	public Object call(String methodName, Object... params) {
 		try {
 			Class subclass = this.getClass();
 			for (Method method : subclass.getMethods()) {
 				if (method != null && method.getName().equals(methodName)) {
+
+					// 支持重载方法部分
+
 					Object results = method.invoke(this, params);
 					return results;
 				}

@@ -194,7 +194,6 @@ class CacheGC extends Thread {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				Container.memory().is_enable = false;
-				ExceptionHandler.handling(e);
 			}
 
 			ConcurrentHashMap.KeySetView<String, CacheNode> keySet = SimpleMapMemoryDriver.CACHE.keySet();

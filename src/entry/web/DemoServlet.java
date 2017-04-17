@@ -39,18 +39,18 @@ public class DemoServlet extends HttpServlet {
         // 因为demo.htm是固定的.用户请求的资源不能时有时没有,如mod名称错误最好选择回到资源主页面
         String moduleName = ArraysHelper.inArrays(MOD_ARRAY, modName) ? modName : "index";
 
-        Container.app().init();
-
-        DemoMethod.pub();
-        DemoMethod.commonHandle();
-        DemoMethod.communal();
-
         // 强调，module包不是service层,只是某个大功能的子模块.
         // Service接口模式只适用于展示层比较简单的页面(企业数据展示类页面)
         // module 和 service 在设计上有本质区别。service取决于业务封装抽象，体现在Bean。module只针对页面，没有Bean
         // 现在这样为复杂互联网功能页面设计，一个module类代码可能非常长
         // “将业务数据结构转至数据库表定义, 代码内数据用Map传递”这种方式对企业级开发非常不友好
         try {
+            Container.app().init();
+
+            DemoMethod.pub();
+            DemoMethod.commonHandle();
+            DemoMethod.communal();
+
             Class moduleClass = Class.forName(GlobalConfig.SOURCE_PATH + ".module.demo.Demo" + moduleName);
             // Java反射moduleClass.getMethods() | getName 时只能输出不带参数的名字.run方法尽量不要带参数
             moduleClass.getMethod("run").invoke(null);

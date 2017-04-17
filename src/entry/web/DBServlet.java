@@ -44,9 +44,8 @@ public class DBServlet extends HttpServlet {
 			return;
 		}
 
-		Container.app().init();
-
 		try {
+			Container.app().init();
 			Class moduleClass = Class.forName(GlobalConfig.SOURCE_PATH + ".module.db.DB" + moduleName);
 			moduleClass.getMethod("run").invoke(null);
 		} catch (Exception e) {

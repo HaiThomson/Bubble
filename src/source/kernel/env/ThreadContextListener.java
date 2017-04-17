@@ -16,9 +16,6 @@
  */
 package source.kernel.env;
 
-import source.kernel.Core;
-import source.kernel.Container;
-import source.kernel.DB;
 import source.kernel.base.ExceptionHandler;
 
 import javax.servlet.ServletRequestEvent;
@@ -39,40 +36,16 @@ public class ThreadContextListener implements ServletRequestListener {
      */
     public void requestDestroyed(ServletRequestEvent servletRequestEvent) {
         // System.out.println("Listener" + "\t" + Thread.currentThread().getName() + "\t" + ((HttpServletRequest) servletRequestEvent.getServletRequest()).getRequestURL());
-        Core.persistenceSession();
-        ThreadContextListener.destroyResource();
+        try {
+            ThreadContextDestroyer.destroyResource();
+        } catch (SQLException e) {
+            ExceptionHandler.handling(e);
+        }
     }
 
     public void requestInitialized(ServletRequestEvent servletRequestEvent) {
 
     }
 
-    public static void destroyResource() {
-        ThreadContextListener.closeDataBaseConnnection();
-        ThreadContextListener.destoryDriver();
-        ThreadContextListener.destoryApplication();
-    }
 
-    private static void closeDataBaseConnnection() {
-        if (DB.getDriver() != null) {
-            try {
-                if (!DB.isAutoCommit()) {
-                    DB.commitTransaction();
-                    // 默认开启连接池, 如果不设置[自动提交]则影响下次运行
-                    DB.closeTransaction();
-                }
-                DB.closeConnection();
-            } catch (SQLException sqlException) {
-                ExceptionHandler.handling(new SQLException("关闭数据库连接时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题"));
-            }
-        }
-    }
-
-    private static void destoryDriver() {
-        DB.destoryDriver();
-    }
-
-    private static void destoryApplication() {
-        Container.destoryApp();
-    }
 }

@@ -54,6 +54,10 @@ public abstract class DataBaseDriver extends Base {
         this.connection = null;
     }
 
+    protected String getDatabaseProductName() throws SQLException {
+        return this.connection.getMetaData().getDatabaseProductName();
+    }
+
     /**
      * 获取数据版本号
      * @return
@@ -103,6 +107,12 @@ public abstract class DataBaseDriver extends Base {
         }
     }
 
+    protected abstract String makeTruncate(String table);
+
+    protected abstract String makePagination(String table, String condition, String sort, int start, int limit);
+
+    protected abstract String makeSelectTableField(String table);
+
     protected abstract String makeInsert(String table, Map<String, Object> data);
 
     protected abstract String makeDelete(String table, Map<String, Object> condition);
@@ -113,11 +123,11 @@ public abstract class DataBaseDriver extends Base {
 
     protected abstract String makeUpdate(String table, Map<String, Object> data, String condition);
 
-    protected abstract String makePagination(String table, String condition, int start, int limit);
-
-    protected abstract String makeTruncate(String table);
-
     protected abstract String makeCondition(String field, Object value, String glue);
+
+    protected abstract String makeGroup(String... fields) throws SQLException;
+
+    protected abstract String makeHaving(String method, String field, String direction, Object value) throws SQLException;
 
     protected abstract String makeOrder(String field, String direction);
 

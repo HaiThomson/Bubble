@@ -18,6 +18,7 @@ package source.kernel.db.driver;
 
 import source.kernel.db.DataBaseDriver;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,6 @@ public class MySQLDriver extends DataBaseDriver {
 
 	@Override
 	protected String makeInsert(String table, Map<String, Object> data) {
-		// return "INSERT INTO " + table + this.implodeInsert(data);
 		return "INSERT INTO " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
 	}
 
@@ -67,26 +67,50 @@ public class MySQLDriver extends DataBaseDriver {
 	}
 
 	@Override
-	protected String makePagination(String table, String condition, int start, int limit) {
-		if (condition == "") {
-			if (start > 0 && limit > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + start + ", " + limit;
-			} else if (limit > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + limit;
-			} else if (start > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + start;
+	protected String makePagination(String table, String condition, String sort, int start, int limit) {
+		if (condition == null || condition.equals("")) {
+			if (sort == null || sort.equals("")) {
+				if (start > 0 && limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + start + ", " + limit;
+				} else if (limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + limit;
+				} else if (start > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " LIMIT " + start;
+				} else {
+					return "";
+				}
 			} else {
-				return "";
+				if (start > 0 && limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " " + sort + " LIMIT " + start + ", " + limit;
+				} else if (limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " " + sort + " LIMIT " + limit;
+				} else if (start > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " " + sort + " LIMIT " + start;
+				} else {
+					return "";
+				}
 			}
 		} else {
-			if (start > 0 && limit > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + start + ", " + limit;
-			} else if (limit > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + limit;
-			} else if (start > 0) {
-				return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + start;
+			if (sort == null || sort.equals("")) {
+				if (start > 0 && limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + start + ", " + limit;
+				} else if (limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + limit;
+				} else if (start > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " LIMIT " + start;
+				} else {
+					return "";
+				}
 			} else {
-				return "";
+				if (start > 0 && limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " " + sort + " LIMIT " + start + ", " + limit;
+				} else if (limit > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " " + sort + " LIMIT " + limit;
+				} else if (start > 0) {
+					return "SELECT * FROM " + this.getRealTableName(table) + " WHERE " + condition + " " + sort + " LIMIT " + start;
+				} else {
+					return "";
+				}
 			}
 		}
 	}
@@ -97,20 +121,25 @@ public class MySQLDriver extends DataBaseDriver {
 	}
 
 	@Override
+	protected String makeSelectTableField(String table) {
+		return "SHOW FIELDS FROM " + this.getRealTableName(table);
+	}
+
+	@Override
 	protected String makeOrder(String field, String direction) {
-		return " ORDER BY " + this.quoteField(field) + " " + direction;
+		return " ORDER BY " + this.quoteField(field) + " " + direction + " ";
 	}
 
 	@Override
 	protected String makeLimit(int start, int limit) {
 		if (start > 0 && limit > 0) {
-			return " LIMIT " + start + ", " + limit;
+			return " LIMIT " + start + ", " + limit + " ";
 		} else if (limit > 0) {
-			return " LIMIT " + limit;
+			return " LIMIT " + limit + " ";
 		} else if (start > 0) {
-			return " LIMIT " + start;
+			return " LIMIT " + start + " ";
 		} else {
-			return "";
+			return " ";
 		}
 	}
 
@@ -122,44 +151,70 @@ public class MySQLDriver extends DataBaseDriver {
 			glue = glue.equals("notin") || glue.equals("not in") ? "notin" : "in";
 			String sql = "";
 			sql = this.quoteValueList((List<Object>) value);
-			return field + (glue.equals("notin") ? " NOT" : "") + " IN("  + sql + ")";
+			return " " + field + (glue.equals("notin") ? " NOT" : "") + " IN("  + sql + ") ";
 		}
 
 		if (value.getClass().isArray()) {
 			glue = glue.equals("notin") || glue.equals("not in") ? "notin" : "in";
 			String sql = "";
 			sql = this.quoteValueArray((Object[]) value);
-			return field + (glue.equals("notin") ? " NOT" : "") + " IN("  + sql + ")";
+			return " " + field + (glue.equals("notin") ? " NOT" : "") + " IN("  + sql + ") ";
 		}
 
 		switch (glue) {
 			case "=":
-				return field + glue + this.quoteValue(value);
+				return " " + field + glue + this.quoteValue(value) + " ";
 
 			case "-":
 			case "+":
-				return field + "=" + field + glue + this.quoteValue(value);
+				return " " + field + "=" + field + glue + this.quoteValue(value) + " ";
 
 			case "|":
 			case "&":
 			case "^":
-				return field + "=" + field + glue + this.quoteValue(value);
+				return " " + field + "=" + field + glue + this.quoteValue(value) + " ";
 
 			case ">":
 			case "<":
 			case "<>":
 			case "<=":
 			case ">=":
-				return field + glue + this.quoteValue(value);
+				return " " + field + glue + this.quoteValue(value) + " ";
 
-			//makeCondition like多条件时，传入的值要自己处理（很难也不很少自动生成）。
-			//LIKE ("%sf%","g%","joke")
+			//like多条件时，传入的值要自己处理
+			//如：传入 "%sf%","g%","joke" 生成 LIKE ("%sf%","g%","joke")
 			case "like":
-				return field +  " LIKE (" + this.quoteValue(value) +  ")";
+				return " " + field +  " LIKE (" + this.quoteValue(value) +  ") ";
 
 			default:
-				return "";
+				return " ";
 		}
+	}
+
+	@Override
+	protected String makeGroup(String... fields) throws SQLException {
+		if (fields == null || fields.length == 0) {
+			throw new SQLException("Null Fields");
+		}
+
+		StringBuffer stringBuffer = new StringBuffer(" GROUP BY ");
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != null && fields[i].equals("")) {
+				stringBuffer.append(fields[i]);
+				stringBuffer.append(", ");
+			} else {
+				throw new SQLException("Null Field in subscript " + i);
+			}
+		}
+		stringBuffer.delete(stringBuffer.length() - 3, stringBuffer.length() - 1);
+		stringBuffer.append(" ");
+
+		return stringBuffer.toString();
+	}
+
+	@Override
+	protected String makeHaving(String method, String field, String direction, Object value) throws SQLException {
+		return null;
 	}
 
 	@Override
@@ -192,7 +247,7 @@ public class MySQLDriver extends DataBaseDriver {
 			values = values + comma + this.quoteValue(data.get(key));
 			comma = glue;
 		}
-		sql = "(" + fields + ")" + " VALUES " + "(" + values + ")";
+		sql = "(" + fields + ")" + " VALUES " + "(" + values + ") ";
 		return sql;
 	}
 

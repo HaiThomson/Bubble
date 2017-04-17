@@ -5,15 +5,16 @@ import source.kernel.DB;
 import source.kernel.config.GlobalConfig;
 import source.kernel.db.pool.ConnectionPooling;
 import source.kernel.helper.MapHelper;
+import source.kernel.serialization.oracle.JavaSerialization;
 
-import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.jar.JarEntry;
 
 /**
  * @author Hai Thomson
  */
 public class common_syscacheTest {
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws Exception {
 		ConnectionPooling.init("c3p0", "classloader:" + ("./config/c3p0-config.xml"));
 		DB.init(GlobalConfig.DATABASE_CONFIG);
 		common_syscache common_syscache = (source.table.common_syscache) Container.table("common_syscache");
@@ -21,7 +22,7 @@ public class common_syscacheTest {
 		HashMap<String, Object> setting = new HashMap<String, Object>();
 		setting.put("oltimespan", 10L);
 
-		common_syscache.insert("setting", MapHelper.serializableToBytes(setting), 999999999);
+		common_syscache.insert("setting", JavaSerialization.serializableToBytes(setting), 999999999);
 	}
 
 	public static void justtest() {

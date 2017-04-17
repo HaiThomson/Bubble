@@ -14,12 +14,12 @@ import java.io.IOException;
  */
 public class MarketAction {
 	public static void index() throws ServletException, IOException {
-		System.out.println(Ognl.getLang("core.k10"));
+		System.out.println(Ognl.getLang("core.nextpage"));
 		System.out.println(Ognl.getLang("core.action.signup"));
 		System.out.println(Ognl.getLang("core.date.before"));
 		System.out.println(Ognl.getLang("core.weeks.a"));
 		System.out.println(Ognl.getLang("core.weeks.2"));
-		System.out.println(Ognl.getGlobal("lang.core.k10"));
+		System.out.println(Ognl.getGlobal("lang.core.nextpage"));
 	}
 
 	public static void input() throws ServletException, IOException {

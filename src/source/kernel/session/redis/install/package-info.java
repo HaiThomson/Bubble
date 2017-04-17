@@ -1,4 +1,4 @@
 /**
- * Created by Hai on 2017/4/9.
+ * @author Hai Thomson
  */
 package source.kernel.session.redis.install;

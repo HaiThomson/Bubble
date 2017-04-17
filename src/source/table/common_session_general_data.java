@@ -14,9 +14,7 @@ import java.util.Map;
 public class common_session_general_data extends Table {
 
 	public common_session_general_data() {
-		super();
-		this.tableName = "common_session_general_data";
-		this.primaryKey = "sessionid";
+		super("common_session_general_data", "sessionid");
 	}
 
 	public Map fetch(String sessionid, String ip, String userid) {

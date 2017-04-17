@@ -71,9 +71,8 @@ public class MD5Helper {
 			return MessageDigest.getInstance("md5");
 		} catch (NoSuchAlgorithmException e) {
 			// 99.9999999%不会发生异常
-			ExceptionHandler.handling(e);
+			throw new RuntimeException(e.getMessage());
 		}
-		return null;
 	}
 
 	private static synchronized String md5(byte[] bytes) {

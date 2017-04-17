@@ -37,7 +37,7 @@ public class ExceptionHandler {
 	public static final boolean EXCEPTION_HALT_OFF = true;
 	public static final boolean EXCEPTION_HALT_ON = false;
 
-	private ExceptionHandler() {}
+	protected ExceptionHandler() {}
 
 	public static void handling(Exception e) {
 		ExceptionHandler.handling(e, true, true, true);
@@ -45,7 +45,7 @@ public class ExceptionHandler {
 
 	public static void handling(Exception e, boolean show, boolean log, boolean halt) {
 		if (show && GlobalConfig.DEBUG) {
-			System.out.println(new Date().toString() + " ERROR [" + Thread.currentThread().getName() + "] " + e.getClass().getName() + ": " + e.getMessage());
+			System.err.println(new Date().toString() + " ERROR [" + Thread.currentThread().getName() + "] " + e.getClass().getName() + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -55,8 +55,6 @@ public class ExceptionHandler {
 
 		if (halt) {
 			if (DB.getDriver() != null) {
-				// 如果开启了事务，则回滚.并关闭事务手动提交
-				// 收回资源
 				try {
 					if (!DB.isAutoCommit()) {
 						DB.rollBackTransaction();
@@ -64,7 +62,7 @@ public class ExceptionHandler {
 					}
 					DB.closeConnection();
 				} catch (SQLException sqlException) {
-					throw new RuntimeException("ExceptionHandler 执行数据库操作时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题");
+					throw new RuntimeException("ExceptionHandler在执行数据库操作时发生 [" + sqlException.getClass().getName() + ": " + sqlException.getMessage() + "] 问题");
 				}
 			}
 

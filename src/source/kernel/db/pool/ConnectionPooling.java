@@ -50,8 +50,12 @@ public class ConnectionPooling {
                     ConnectionPooling.CONNECTIONPOOLING = (ConnectionPoolingDriver) cpClass.newInstance();
                     ConnectionPooling.CONNECTIONPOOLING.init(path);
                 }
-            } catch (Exception e) {
-                ExceptionHandler.handling(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("未找到[" + cpName + "]的连接池驱动" + e.getMessage());
+            } catch (InstantiationException e) {
+                throw new RuntimeException("连接池驱动不是一个实体类！ " + e.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("无法访问子连接池驱动的构造函数！ " + e.getMessage());
             }
         }
     }
@@ -68,8 +72,12 @@ public class ConnectionPooling {
                     ConnectionPooling.CONNECTIONPOOLING = (ConnectionPoolingDriver) cpClass.newInstance();
                     ConnectionPooling.CONNECTIONPOOLING.init(path, dbName);
                 }
-            } catch (Exception e) {
-                ExceptionHandler.handling(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("未找到[" + cpName + "]的连接池驱动" + e.getMessage());
+            } catch (InstantiationException e) {
+                throw new RuntimeException("连接池驱动不是一个实体类！ " + e.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("无法访问子连接池驱动的构造函数！ " + e.getMessage());
             }
         }
     }
@@ -90,7 +98,7 @@ public class ConnectionPooling {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            Logger.info("主线程在等待c3p0关闭时出现了些问题: " + e.getMessage());
+            // Nothing to do
         }
     }
 

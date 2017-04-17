@@ -1,5 +1,5 @@
 /**
- * 用户可访问资源
+ * 资源入口
  * @author Hai Thomson
  */
 package entry.web;

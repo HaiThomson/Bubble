@@ -16,6 +16,6 @@
  */
 
 /**
- * Created by Hai on 2017/4/6.
+ * @author Hai Thomson
  */
 package source.kernel.db.pool;

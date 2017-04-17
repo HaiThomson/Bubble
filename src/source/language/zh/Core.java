@@ -25,14 +25,10 @@ public class Core extends Base {
 	// Format: 定义单一字符串
 	public static final String nextpage = "下一页";
 	public static final String prevpage = "上一页";
-	public static final String pageunit = "上一页";
-	public static final String total = "上一页";
-	public static final String k10 = "万";
-	public static final String pagejumptip = "输入页码，按回车快速跳转";
 
 	// Format: 对于复杂的语言块有两大类三种方式可选
 	// 内部类不可不免创造没有名字的内部类！
-	// 推荐使用  Style1-2.除了"{{}}"，没有槽点
+	// 推荐使用 Style1-2.除了"{{}}"没有槽点
 	// Style1-1: 内部类
 	public static final Action action = new Action();
 
@@ -41,7 +37,6 @@ public class Core extends Base {
 	// OGNL支持直接取属性值
 	public static class Action {
 		public static final String signup = "登录";
-		public static final String home = "空间";
 		public static final String index = "首页";
 		public static final String other = "其他";
 	}
@@ -50,13 +45,13 @@ public class Core extends Base {
 	public static final HashMap<String, String> date = new HashMap<String, String >() {{
 		put("before", "前");
 		put("day", "天");
-		put("yday", "昨天");
-		put("bday", "前天");
+		put("yesterday", "昨天");
+		put("beforeyesterday", "前天");
 		put("hour", "小时");
 		put("half", "半");
 		put("min", "分钟");
 		put("sec", "秒");
-		put("now", "刚刚");
+		put("now", "现在");
 	}};
 
 	// Style2: Map

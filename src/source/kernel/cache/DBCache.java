@@ -19,6 +19,7 @@ package source.kernel.cache;
 import source.kernel.Container;
 import source.table.common_cache;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -36,20 +37,29 @@ public class DBCache {
 		}
 	}
 
-	public static byte[] loadCache(String cachename) {
-		Map result = ((common_cache) Container.table("common_cache")).query(cachename);
-		if (result != null && (long) result.get("dateline") > System.currentTimeMillis()) {
-			return (byte[]) result.get("data");
+	public static byte[] loadCache(String cachename) throws CacheException {
+		try {
+			Map result = ((common_cache) Container.table("common_cache")).fetchByPrimaryKey(cachename);
+			if (result != null && (long) result.get("dateline") > System.currentTimeMillis()) {
+				return (byte[]) result.get("data");
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new CacheException("从数据库载入Cache时发生错误！ " + e.getMessage());
 		}
-		return null;
 	}
 
-	public static boolean deleteCache(String cachename) {
-		int number = ((common_cache) Container.table("common_cache")).delete(cachename);
-		if (number > 0) {
-			return true;
-		} else {
-			return false;
+	public static boolean deleteCache(String cachename) throws CacheException {
+		try {
+			int number = ((common_cache) Container.table("common_cache")).deleteByPrimaryKey(cachename);
+			if (number > 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new CacheException("从数据库删除Cache记录时发生错误！ " + e.getMessage());
 		}
 	}
 }

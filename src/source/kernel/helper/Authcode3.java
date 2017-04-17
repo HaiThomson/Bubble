@@ -98,7 +98,7 @@ public class Authcode3 {
     }   
   
     /// <summary>   
-    /// MD5函数   
+    /// MD5方法
     /// </summary>   
     /// <param name="str">原始字符串</param>   
     /// <returns>MD5结果</returns>   

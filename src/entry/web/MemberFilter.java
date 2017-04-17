@@ -15,6 +15,7 @@ import java.sql.SQLException;
 
 /**
  * Servlet Filter实现控制器实验
+ * 目前还有很多问题需解决
  * 内部跳转不自动过滤器.需手动跳转！
  * @author Hai Thomson
  */
@@ -58,9 +59,8 @@ public class MemberFilter implements Filter {
 			return;
 		}
 
-		Container.app().init();
-
 		try {
+			Container.app().init();
 			Class moduleClass = Class.forName(GlobalConfig.SOURCE_PATH + ".module.member.Member" + moduleName);
 			moduleClass.getMethod("run").invoke(null);
 		} catch (Exception e) {

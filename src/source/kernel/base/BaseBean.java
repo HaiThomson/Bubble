@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 /**
  * @author Hai Thomson
  */
-public class BaseBean extends Base {
+public abstract class BaseBean extends Base {
 
 	/**
 	 * 该方法并不能保证一定能设值成功

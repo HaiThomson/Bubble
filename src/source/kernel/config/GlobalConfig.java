@@ -17,7 +17,6 @@
 package source.kernel.config;
 
 import source.kernel.base.Base;
-import source.kernel.base.ExceptionHandler;
 import source.kernel.db.DatabaseConfig;
 import source.kernel.log.LogConfig;
 import source.kernel.serialization.json.Json;
@@ -47,7 +46,7 @@ public class GlobalConfig extends Base {
     public static String OUTPUT_CHARSET = "UTF-8";
 
     // 是否开启全局调试模式
-    public static Boolean DEBUG = false;
+    public static Boolean DEBUG = true;
 
     // 日志配置
     public static LogConfig LOG_CONFIG = new LogConfig();
@@ -79,17 +78,15 @@ public class GlobalConfig extends Base {
             Map config = Json.parseMap(GlobalConfig.loadConfigFile(path));
             if (config != null && config.size() > 0) {
                 GlobalConfig.setItemValue(config);
-            } else {
-                // log
             }
         } catch (IOException e) {
-            ExceptionHandler.handling(new IOException("载入配置文件时发生IO错误.文件不存在或无法读取! " + e.getMessage()));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException("载入配置文件时发生IO错误.文件不存在或无法读取! " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("没有找到子配置对应的类文件！ " + e.getMessage());
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            throw new RuntimeException("子配置类不是一个实体类！ " + e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("无法访问子配置类的构造函数！ " + e.getMessage());
         }
     }
 

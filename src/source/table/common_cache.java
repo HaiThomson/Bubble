@@ -1,6 +1,5 @@
 package source.table;
 
-import source.kernel.Container;
 import source.kernel.DB;
 import source.kernel.base.*;
 
@@ -14,9 +13,7 @@ public class common_cache extends Table {
 	private static final common_cache common_cache = new common_cache();
 
 	public common_cache() {
-		super(); // 不写编译时也会加上! 强调下，Table类默认构造函数有关键流程！
-		this.primaryKey = "cachekey";
-		this.tableName = "common_cache";
+		super("common_cache", "cachekey");
 	}
 
 	public static int insert(String cachename, byte[] data, int dateline) {

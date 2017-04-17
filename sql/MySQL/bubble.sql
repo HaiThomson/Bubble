@@ -1,4 +1,4 @@
-Ôªø-- MySQL dump 10.13  Distrib 5.5.15, for Win64 (x86)
+-- MySQL dump 10.13  Distrib 5.5.15, for Win64 (x86)
 --
 -- Host: localhost    Database: bubble
 -- ------------------------------------------------------
@@ -138,7 +138,7 @@ CREATE TABLE `pre_common_syscache` (
 
 LOCK TABLES `pre_common_syscache` WRITE;
 /*!40000 ALTER TABLE `pre_common_syscache` DISABLE KEYS */;
-INSERT INTO `pre_common_syscache` VALUES ('setting','¬¨Ïö∞sr\0java.util.HashMap€ÅV`œÉ\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;¬ã‰ëå¬è#›Ç\0J\0valuexr\0java.lang.Number¬Ü¬¨¬ï¬î…Ç\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
+INSERT INTO `pre_common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',999999999);
 /*!40000 ALTER TABLE `pre_common_syscache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,4 +172,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-13 11:26:20
+-- Dump completed on 2017-04-16  3:26:18

@@ -16,9 +16,7 @@ public class common_syscache extends Table {
 	private static final common_syscache common_syscache = new common_syscache();
 
 	public common_syscache() {
-		super();
-		this.tableName = "common_syscache";
-		this.primaryKey = "cachename";
+		super("common_syscache", "cachename");
 	}
 
 	public static Object insert(String cachename, byte[] data, int  dateline) {

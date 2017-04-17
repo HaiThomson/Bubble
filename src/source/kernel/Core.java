@@ -20,8 +20,8 @@ import source.kernel.cache.DBCache;
 import source.kernel.config.GlobalConfig;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.helper.MD5Helper;
-import source.kernel.helper.MapHelper;
 import source.kernel.security.validate.Validation;
+import source.kernel.serialization.oracle.JavaSerialization;
 import source.table.common_member;
 import source.table.common_syscache;
 
@@ -37,6 +37,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -110,7 +111,7 @@ public class Core {
 	 * 也可以用过滤器，监听器（默认）
 	 * @return
 	 */
-	public static void persistenceSession() {
+	public static void persistenceSession() throws SQLException {
 		if (Container.app() != null && Container.app().initSession) {
 			if(!Container.app().session.saved) {
 				HashMap<String, Object> G = Container.app().Global;
@@ -260,8 +261,8 @@ public class Core {
 
 	}
 
-	public static Map getUserByUid(String userid) {
-		Map user = ((common_member) Container.table("common_member")).query(userid);
+	public static Map getUserByUid(String userid) throws SQLException {
+		Map user = ((common_member) Container.table("common_member")).fetchByPrimaryKey(userid);
 		// 安全检查: 传入的userid和取出的userid可能不相等
 		if (user != null && userid.equals((String) user.get("userid"))) {
 			// 安全检查通过，打个合格标签
@@ -366,31 +367,31 @@ public class Core {
 	 * @param cachename
 	 * @param data
 	 */
-	public static void saveSyscache(String cachename, Map data, int dateline) {
-		((common_syscache) Container.table("common_syscache")).insert(cachename, MapHelper.serializableToBytes(data), dateline);
+	public static void saveSyscache(String cachename, Map data, int dateline) throws IOException {
+		((common_syscache) Container.table("common_syscache")).insert(cachename, JavaSerialization.serializableToBytes(data), dateline);
 		Container.app().request.getServletContext().setAttribute(cachename, data);
 	}
 
 	// 载入必要的系统缓存到 ServletContext
 	// 避免每次加载系统缓存时的资源消耗
 	// 使用Java序列化和反序列化大Map，过于消耗资源.
-	public static void loadSyscache(ServletContext servletContext) {
+	public static void loadSyscache(ServletContext servletContext) throws IOException, ClassNotFoundException {
 		Map result = ((common_syscache) Container.table("common_syscache")).fetchAll();
 		if (result != null) {
 			Set<String> cacheKeys = result.keySet();
 			for (String key : cacheKeys) {
 				if (key.equals("setting")) {
-					servletContext.setAttribute(key, MapHelper.serializationFromBytes((byte[]) (((Map) result.get(key))).get("cachedata")));
+					servletContext.setAttribute(key, JavaSerialization.serializationFromBytes((byte[]) (((Map) result.get(key))).get("cachedata")));
 				}
 			}
 		}
 	}
 
 	// 载入非必要系统缓存
-	public static Map loadSyscache(String cachename) {
-		Map result = ((common_syscache) Container.table("common_syscache")).query(cachename);
+	public static Map loadSyscache(String cachename) throws SQLException, IOException, ClassNotFoundException {
+		Map result = ((common_syscache) Container.table("common_syscache")).fetchByPrimaryKey(cachename);
 		if (result != null && (long)result.get("dateline") > System.currentTimeMillis() / 1000) {
-			return MapHelper.serializationFromBytes((byte[]) result.get("data"));
+			return (Map) JavaSerialization.serializationFromBytes((byte[]) result.get("data"));
 		}
 		return null;
 	}

@@ -16,7 +16,6 @@
  */
 package source.kernel.helper;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +88,7 @@ public class MapHelper {
 		return table.toString();
 	}
 	
-	public static byte[] serializableToBytes(Map map) {
+/*	public static byte[] serializableToBytes(Map map) {
 		if (map == null) {
 			return null;
 		}
@@ -104,7 +103,7 @@ public class MapHelper {
 
 			bytes = byteArrayOutputStream.toByteArray();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ExceptionHandler.handling(e);
 		}
 
 		return bytes;
@@ -124,13 +123,13 @@ public class MapHelper {
 			result = (Map) inputStream.readObject();
 			inputStream.close();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			ExceptionHandler.handling(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return result;
-	}
+	}*/
 
 	public static void main(String[] args) {
 		HashMap<String, Object> map = new HashMap<String, Object>() {{

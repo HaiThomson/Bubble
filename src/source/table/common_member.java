@@ -7,8 +7,6 @@ import source.kernel.base.Table;
  */
 public class common_member extends Table {
 	public common_member() {
-		super();
-		this.tableName = "common_member";
-		this.primaryKey = "userid";
+		super("common_member", "userid");
 	}
 }

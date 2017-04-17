@@ -16,7 +16,6 @@
  */
 package source.kernel.db;
 
-import source.kernel.base.ExceptionHandler;
 import source.kernel.db.dbutils.DbUtils;
 import source.kernel.db.dbutils.ResultSetHandler;
 import source.kernel.db.dbutils.handlers.*;
@@ -47,8 +46,7 @@ public class DataBase {
      * @param config
      * @throws SQLException
      */
-    public static void init(DatabaseConfig config) {
-        // 异常处理写法模板
+    public static void init(DatabaseConfig config) throws SQLException {
         try {
             if ( DataBase.getDriver() == null || DataBase.getDriver().getConnection() == null || DataBase.getDriver().getConnection().isClosed()) {
                 Class<?> dbDriverClass = Class.forName(config.DBDRIVER_PATH);
@@ -57,14 +55,13 @@ public class DataBase {
                 DataBase.getDriver().connect();
             }
         } catch (ClassNotFoundException e) {
-            // 传递相同类型异常是为了让handling方法获得异常类型.转发Exception破坏了信息完整性
-            ExceptionHandler.handling(new ClassNotFoundException("没有加载到指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 原始信息: " + e.getMessage()));
+            throw new SQLException("没有加载到指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 原始信息: " + e.getMessage());
         } catch (IllegalAccessException e) {
-            ExceptionHandler.handling(new IllegalAccessException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
+            throw new SQLException("无法访问DataBaseDriver: " + config.DBDRIVER_PATH + "的构造函数! " + " 原始信息: " + e.getMessage());
         } catch (InstantiationException e) {
-            ExceptionHandler.handling(new InstantiationException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
+            throw new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 不是一个实现类! " + " 原始信息: " + e.getMessage());
         } catch (SQLException e) {
-            ExceptionHandler.handling(new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage()));
+            throw new SQLException("指定的DataBaseDriver: " + config.DBDRIVER_PATH + " 有问题！" + " 原始信息: " + e.getMessage());
         }
     }
 
@@ -79,10 +76,17 @@ public class DataBase {
 
     /**
      * connection.close()；后connection并不会指向null。
-     * 多次调用不报错。不建议多次调用。
+     * 多次调用不报错
      */
     public static void closeConnection() throws SQLException {
-        DataBase.getDriver().closeConnection();
+        if (DataBase.getDriver() != null) {
+            if (!DataBase.isAutoCommit()) {
+                DataBase.commitTransaction();
+                // 默认开启连接池, 如果不设置[自动提交]则影响下次运行
+                DataBase.closeTransaction();
+            }
+            DataBase.getDriver().closeConnection();
+        }
     }
 
     public static void beginTransaction() throws SQLException {
@@ -125,12 +129,10 @@ public class DataBase {
             statement = connection.createStatement();
             return statement.execute(command);
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, command);
+            DataBase.rethrowSQLException(e, command);
         } finally {
-            try {
+            if (statement != null) {
                 statement.close();
-            } catch (SQLException e) {
-                DataBase.recordCloseStatementException(e);
             }
         }
         return true;
@@ -165,13 +167,9 @@ public class DataBase {
             rows = stmt.executeBatch();
 
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, sql, (Object[]) params);
+            DataBase.rethrowSQLException(e, sql, (Object[]) params);
         } finally {
-            try {
-                DbUtils.close(stmt);
-            } catch (SQLException e) {
-                DataBase.recordCloseStatementException(e);
-            }
+            DbUtils.close(stmt);
         }
 
         return rows;
@@ -211,13 +209,9 @@ public class DataBase {
             generatedKeys = rsh.handle(rs);
 
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, sql, (Object[]) params);
+            DataBase.rethrowSQLException(e, sql, (Object[]) params);
         } finally {
-            try {
-                DbUtils.close(stmt);
-            } catch (SQLException e) {
-                DataBase.recordCloseStatementException(e);
-            }
+            DbUtils.close(stmt);
         }
 
         return generatedKeys;
@@ -262,13 +256,9 @@ public class DataBase {
             ResultSet resultSet = stmt.getGeneratedKeys();
             generatedKeys = rsh.handle(resultSet);
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, sql, params);
+            DataBase.rethrowSQLException(e, sql, params);
         } finally {
-            try {
-                DbUtils.close(stmt);
-            } catch (SQLException e) {
-                DataBase.recordCloseStatementException(e);
-            }
+            DbUtils.close(stmt);
         }
 
         return generatedKeys;
@@ -307,13 +297,9 @@ public class DataBase {
             rows = stmt.executeUpdate();
 
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, sql, params);
+            DataBase.rethrowSQLException(e, sql, params);
         } finally {
-            try {
-                DbUtils.close(stmt);
-            } catch (SQLException e) {
-                DataBase.recordCloseStatementException(e);
-            }
+            DbUtils.close(stmt);
         }
 
         return rows;
@@ -494,6 +480,17 @@ public class DataBase {
         return DataBase.query(sql, new ScalarHandler<Object>(columnName), params);
     }
 
+    /**
+     * 这是一个通用方法，可以执行JDBC支持的所有SQL，返回所有可能产生的结果
+     * 使用单词"query"为了和JDBC使用的词汇保持一致.
+     * DataBase是JDBC的封装.
+     * @param sql
+     * @param rsh
+     * @param params
+     * @param <T>
+     * @return
+     * @throws SQLException
+     */
     private static <T> T query(String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
         if (sql == null) {
             throw new SQLException("Null SQL statement");
@@ -510,18 +507,12 @@ public class DataBase {
             result = rsh.handle(rs);
 
         } catch (SQLException e) {
-            DataBase.recodeSQLException(e, sql, params);
+            DataBase.rethrowSQLException(e, sql, params);
         } finally {
             try {
                 DbUtils.close(rs);
-            } catch (SQLException e) {
-                DataBase.recordCloseResultSetException(e);
             } finally {
-                try {
-                    DbUtils.close(stmt);
-                } catch (SQLException e) {
-                    DataBase.recordCloseStatementException(e);
-                }
+                DbUtils.close(stmt);
             }
         }
 
@@ -585,7 +576,7 @@ public class DataBase {
     }
 
     /**
-     * 构造完整错误信息并记录
+     * Throws a new exception with a more informative error message.
      *
      * @param cause
      *            The original exception that will be chained to the new
@@ -598,8 +589,10 @@ public class DataBase {
      *            The query replacement parameters; <code>null</code> is a valid
      *            value to pass in.
      *
+     * @throws SQLException
+     *             if a database access error occurs
      */
-    protected static void recodeSQLException(SQLException cause, String sql, Object... params) throws SQLException {
+    protected static void rethrowSQLException(SQLException cause, String sql, Object... params) throws SQLException {
         String causeMessage = cause.getMessage();
         if (causeMessage == null) {
             causeMessage = "";
@@ -616,63 +609,32 @@ public class DataBase {
             msg.append(Arrays.deepToString(params));
         }
 
-        throw new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode());
-    }
-
-    /**
-     * 构造完整错误信息并记录
-     *
-     * @param cause
-     *            The original exception that will be chained to the new
-     *            exception when it's rethrown.
-     *
-     */
-    protected static void recordCloseResultSetException(SQLException cause) throws SQLException {
-        String causeMessage = cause.getMessage();
-        if (causeMessage == null) {
-            causeMessage = "";
-        }
-        StringBuffer msg = new StringBuffer(causeMessage);
-
-        msg.append("ResultSet没有被正确关闭");
-
-        ExceptionHandler.handling(new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode()), ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
-    }
-
-    /**
-     * 构造完整错误信息并记录
-     *
-     * @param cause
-     *            The original exception that will be chained to the new
-     *            exception when it's rethrown.
-     *
-     */
-    protected static void recordCloseStatementException(SQLException cause) throws SQLException {
-        String causeMessage = cause.getMessage();
-        if (causeMessage == null) {
-            causeMessage = "";
-        }
-        StringBuffer msg = new StringBuffer(causeMessage);
-
-        msg.append("Statement没有被正确关闭");
-
-        ExceptionHandler.handling(new SQLException(msg.toString() + cause.getSQLState() + cause.getErrorCode()), ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
+        SQLException e = new SQLException(msg.toString(), cause.getSQLState(), cause.getErrorCode());
+        e.setNextException(cause);
+        throw e;
     }
 
     /**
      * SQL安全性检查
      * @param sql
      */
-    public static void checkSQL(String sql) {
-        SQLWatcher.checkSQL(sql);
-    }
-
-    public static String makePagination(String table, String condition, int m, int n) {
-        return DataBase.getDriver().makePagination(table, condition, m, n);
+    public static void checkSQL(String sql) throws SQLException {
+        switch (DataBase.getDriver().getDatabaseProductName()) {
+            default:
+                SQLWatcher.checkSQL(sql);
+        }
     }
 
     public static String makeTruncate(String table) {
         return DataBase.getDriver().makeTruncate(table);
+    }
+
+    public static String makeSelectTableField(String table) {
+        return DataBase.getDriver().makeSelectTableField(table);
+    }
+
+    public static String makePagination(String table, String condition, String sort, int m, int n) {
+        return DataBase.getDriver().makePagination(table, condition, sort, m, n);
     }
 
     public static String makeCondition(String field, Object value, String glue) {

@@ -17,7 +17,7 @@
 package source.kernel.serialization;
 
 /**
- * Created by Hai on 2017/3/22.
+ * @author Hai Thomson
  */
 public class SerializationException extends Exception {
 	public SerializationException() {}

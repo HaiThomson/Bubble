@@ -20,11 +20,13 @@ import source.kernel.base.Base;
 import source.kernel.security.token.GeneralToken;
 import source.kernel.session.struct.DBStructSessionProvider;
 
+import java.sql.SQLException;
+
 /**
  *
  * @author Hai Thomson
  */
-public class Session extends Base {
+public class Session {
 
 	public boolean isnew = false;
 	public boolean saved = false;
@@ -39,7 +41,7 @@ public class Session extends Base {
 	}
 
 	// 返回值，既可以用方法return返回值，也可以让方法修改引用; put container
-	public void init(String sessionid, String ip, String userid) {
+	public void init(String sessionid, String ip, String userid) throws SQLException {
 		// SessionProvider必须保证init后,sessionProvider.value和sessionProvider.sessionid有值！
 		// sessionProvider应该判断sessionid和userid对应关系
 		// 这里是再次判断保证无误
@@ -63,7 +65,7 @@ public class Session extends Base {
 		this.sessionProvider.delete();
 	}
 
-	public void update() {
+	public void update() throws SQLException {
 		if (!this.saved) {
 			this.sessionProvider.update(this.isnew);
 			this.saved = true;

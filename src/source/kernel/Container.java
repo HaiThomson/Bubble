@@ -18,12 +18,13 @@ package source.kernel;
 
 import source.kernel.base.*;
 import source.kernel.config.GlobalConfig;
-import source.kernel.env.ThreadContextListener;
+import source.kernel.env.ThreadContextDestroyer;
 import source.kernel.log.Logger;
 import source.kernel.memory.Memory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 
 /**
  * @author Hai Thomson
@@ -42,10 +43,16 @@ public class Container {
 	}
 
 	public static void creatApp(HttpServletRequest request, HttpServletResponse response) {
+		// 如果WEB容器内部跳转，清理资源
 		if (request.getAttribute("javax.servlet.include.request_uri") != null) {
-			// WEB容器内部跳转，最好清理资源。
-			// 框架内跳转，即跳转至其它主控制器的子模块.不会执行这段代码。但需要和其它主控制器作者沟通是否兼容。
-			ThreadContextListener.destroyResource();
+			// 如果使用框架内跳转，即跳转至其它主控制器的子模块.不会执行这段代码.但需要和其它主控制器作者沟通是否兼容
+
+			// 应该在这里进行错误处理
+			try {
+				ThreadContextDestroyer.destroyResource();
+			} catch (SQLException e) {
+				ExceptionHandler.handling(e);
+			}
 			Container.setApplication(Application.instance(request, response));
 			return;
 		}
@@ -81,7 +88,8 @@ public class Container {
 	private static Base makeTableObject(String name, boolean extendable) {
 		String classPath = GlobalConfig.SOURCE_PATH + ".table." + name;
 		if (extendable) {
-			//container
+			// 如果Table对象启用AOP支持后，要考虑对象还原
+			// container
 		} else {
 			try {
 				Class<?> tableClass = Class.forName(classPath);

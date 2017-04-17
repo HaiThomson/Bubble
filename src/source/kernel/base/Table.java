@@ -24,109 +24,98 @@ import java.util.Map;
 /**
  * @author Hai Thomson
  */
-public class Table extends Base {
+public abstract class Table extends Base {
     protected String tableName;
     protected String primaryKey;
 
-    public Table() {
-        // 即将增加缓存功能
-    }
-
-    public Table(String tableName, String primaryKey) {
-        this();
+    protected Table(String tableName, String primaryKey) {
         this.tableName = tableName;
         this.primaryKey = primaryKey;
+        this.checkTableName();
+        this.checkPrimaryKey();
     }
 
-    public String getTableName() {
-        return this.tableName;
+    /**
+     * 用fetch更准确表达含义
+     * 很多人用select为了和SQL CURD用词保持一致.
+     * ORM搞了那么多年，词都憋不过来.搞个什么劲~~
+     * @param value
+     * @return
+     * @throws SQLException
+     */
+    public Map fetchByPrimaryKey(Object value) throws SQLException {
+        return DB.queryFirstRow("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE " + DB.makeCondition(this.primaryKey, value));
     }
 
-    public String setTableName(String tableName) {
-        return this.tableName = tableName;
+    public Map fetchAll(Object value) throws SQLException {
+        return DB.queryAll("SELECT * FROM " + DB.getRealTableName(this.tableName));
     }
 
-    public Map<String, Object> query(String primaryKey) {
-        try {
-            return DB.queryFirstRow("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE " + DB.makeCondition(this.primaryKey, primaryKey));
-        } catch (SQLException e) {
-            ExceptionHandler.handling(e);
-        }
-        return null;
+    public Map fetchTablefield() throws SQLException {
+        return DB.queryAll(DB.makeSelectTableField(this.tableName));
     }
 
-    public long count() {
-        long count = 0;
-        try {
-            count = (long) DB.queryScalar("SELECT count(*) FROM " + DB.getRealTableName(this.tableName));
-        } catch (SQLException e) {
-            ExceptionHandler.handling(e);
-        }
-        return count;
+    protected Map fetchRange(String condition, String sort, int m, int n) throws SQLException {
+        return DB.queryAll(DB.makePagination(this.tableName, condition, sort, m, n));
     }
 
-    public int update(Map<String, Object> data, Object condition) {
-        DB.makeCondition(this.primaryKey, data, "=");
+    public Map fetchRangeByPrimaryKey(String sort, int m, int n) throws SQLException {
+        return this.fetchRange("", DB.makeOrder(this.primaryKey, sort), m, n);
+    }
+
+    public long countAll() throws SQLException {
+        return (long) DB.queryScalar("SELECT count(*) FROM " + DB.getRealTableName(this.tableName));
+    }
+
+    public int updateByPrimaryKey(Object value, Map<String, Object> data) throws SQLException {
         if(data != null) {
-            this.checkPrimaryKey();
             if (data.getClass().isArray()) {
-                int count = 0;
-                try {
-                    count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "="));
-                } catch (SQLException e) {
-                    ExceptionHandler.handling(e);
-                }
-                return count;
+                return DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, value, "="));
             } else {
-                int count = 0;
-                try {
-                    count = (int) DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, condition, "in"));
-                } catch (SQLException e) {
-                    ExceptionHandler.handling(e);
-                }
-                return count;
+                return DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, value, "in"));
             }
         } else {
-            ExceptionHandler.handling(new NullPointerException("传入的数据为null"));
+            throw new SQLException("传入的数据为null");
         }
-        return 0;
     }
 
-    public int delete(Object object) {
-        if(object != null) {
-            this.checkPrimaryKey();
-            try {
-                return DB.delete(this.tableName, DB.makeCondition(this.primaryKey, object));
-            } catch (SQLException e) {
-                ExceptionHandler.handling(e);
-            }
+    public int deleteByPrimaryKey(Object value) throws SQLException {
+        if(value != null) {
+            return DB.delete(this.tableName, DB.makeCondition(this.primaryKey, value));
         } else {
-            ExceptionHandler.handling(new NullPointerException("传入的数据为null"));
+            throw new SQLException("传入的数据为null");
         }
-        return 0;
     }
 
-    public Object insert(Map<String, Object> data) {
-        try {
+    public Object insert(Map<String, Object> data) throws SQLException {
+        if (data != null) {
             return DB.insert(this.tableName, data);
-        } catch (SQLException e) {
-            ExceptionHandler.handling(e);
+        } else {
+            throw new SQLException("传入的数据为null");
         }
-        return null;
     }
 
-    public Boolean truncate() {
-        try {
-            return DB.executeCommand(DB.makeTruncate(this.tableName));
-        } catch (SQLException e) {
-            ExceptionHandler.handling(e);
-        }
-        return true;
+    public Boolean truncate() throws SQLException {
+        return DB.executeCommand(DB.makeTruncate(this.tableName));
     }
 
     public void checkPrimaryKey() {
-        if (this.primaryKey == null && this.primaryKey.equals("")) {
-            ExceptionHandler.handling(new RuntimeException("Table的子类["+ this.getClass().getName() +"]未按规范定义有效的主键"));
+        if (this.primaryKey == null || this.primaryKey.equals("")) {
+            throw new NullPointerException("Table的子类["+ this.getClass().getName() +"]未按规范初始化有效的主键");
+        }
+    }
+
+    public void checkTableName() {
+        if (this.tableName == null || this.tableName.equals("")) {
+            throw new NullPointerException("Table的子类["+ this.getClass().getName() +"]未按规范初始化有效的表名");
+        }
+    }
+
+    public String toString() {
+        if (this.tableName == null || this.tableName.equals("") || this.primaryKey == null || this.primaryKey.equals("")) {
+            return "TableName=" + this.tableName + " PrimaryKey=" + this.primaryKey;
+        } else {
+           return super.toString();
         }
     }
 }

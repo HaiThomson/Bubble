@@ -21,6 +21,7 @@ import source.kernel.Core;
 import source.kernel.session.SessionProvider;
 import source.table.common_session_struct;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +81,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	}
 
 	@Override
-	public boolean isExistent(String sessionid, String ip, String userid) {
+	public boolean isExistent(String sessionid, String ip, String userid) throws SQLException {
 		Map sessionValue = null;
 		if(sessionid !=null && !sessionid.equals("")) {
 			sessionValue = this.table.fetch(sessionid, ip, userid);
@@ -102,7 +103,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	}
 
 	@Override
-	public void create(String sessionid, String ip, String userid) {
+	public void create(String sessionid, String ip, String userid) throws SQLException {
 		this.value = this.newguest;
 		this.set("sessionid", sessionid);
 		this.set("ip", ip);
@@ -123,7 +124,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	}
 
 	@Override
-	public void update(boolean isnew) {
+	public void update(boolean isnew) throws SQLException {
 		String sessionid = (String) this.get("sessionid");
 		if(sessionid != null && !sessionid.equals("")) {
 			if(isnew) {
@@ -140,7 +141,7 @@ public class DBStructSessionProvider extends SessionProvider {
 		return this.table.clear();
 	}
 
-	public long count() {
-		return this.table.count();
+	public long count() throws SQLException {
+		return this.table.countAll();
 	}
 }
