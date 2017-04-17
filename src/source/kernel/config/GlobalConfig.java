@@ -111,6 +111,7 @@ public class GlobalConfig extends Base {
                         break;
                     default :
                         if (value instanceof Map) {
+                            // System.out.println(value);
                             item.set(null, GlobalConfig.createSub_itemValue(typeName, (Map) value));
                         }
                 }
@@ -143,6 +144,7 @@ public class GlobalConfig extends Base {
                 }
             }
         }
+        // System.out.println(sub_itemObject);
         return sub_itemObject;
     }
 

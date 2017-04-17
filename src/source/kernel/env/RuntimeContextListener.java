@@ -40,8 +40,8 @@ public class RuntimeContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        this.getENVInfomation(servletContextEvent);
         this.checkRuntimeEnvironment(servletContextEvent);
+        this.getENVInfomation(servletContextEvent);
         this.loadConfig(servletContextEvent);
         this.initResouce(servletContextEvent);
         Logger.init(GlobalConfig.LOG_CONFIG);
