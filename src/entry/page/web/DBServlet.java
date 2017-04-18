@@ -1,4 +1,4 @@
-package entry.web;
+package entry.page.web;
 
 import source.kernel.Container;
 import source.kernel.base.ExceptionHandler;

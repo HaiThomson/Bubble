@@ -20,7 +20,9 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 
 /**
  * @author Hai Thomson
@@ -75,22 +77,26 @@ public abstract class Base {
 	 * @param methodName 方法全名
 	 * @return 运行结果
 	 */
-	public Object call(String methodName, Object... params) {
+	public Object call(String methodName, Object... params) throws NoSuchMethodException, InvocationTargetException {
 		try {
 			Class subclass = this.getClass();
 			for (Method method : subclass.getMethods()) {
 				if (method != null && method.getName().equals(methodName)) {
+					if (params == null) {
+						return method.invoke(this);
+					} else {
 
-					// 支持重载方法部分
+						// 支持重载方法部分
 
-					Object results = method.invoke(this, params);
-					return results;
+						return method.invoke(this, params);
+					}
 				}
 			}
-		} catch (Exception e) {
-			ExceptionHandler.handling(e, ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_OFF);
+		} catch (IllegalAccessException e) {
+			throw new NoSuchMethodException("Can not call " + methodName + ". Not hava access!");
 		}
-		throw new RuntimeException(methodName + " is not found. check methodName and params or access authority");
+
+		throw new NoSuchMethodException(methodName + " is not found. check methodName and params or access authority");
 	}
 
 	/**

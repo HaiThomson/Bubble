@@ -1,5 +1,6 @@
 package source.kernel.base;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,7 +51,7 @@ public abstract class AOP extends Base {
 		}
 	}
 
-	public Object call(String methodName, Object... params) {
+	public Object call(String methodName, Object... params) throws NoSuchMethodException, InvocationTargetException {
 
 		Object results = null;
 

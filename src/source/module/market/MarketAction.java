@@ -1,6 +1,6 @@
 package source.module.market;
 
-import entry.web.MarketServlet;
+import entry.page.web.MarketServlet;
 import source.kernel.Container;
 import source.kernel.Core;
 import source.kernel.ognl.Ognl;
