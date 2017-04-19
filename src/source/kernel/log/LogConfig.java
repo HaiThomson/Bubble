@@ -29,7 +29,7 @@ public class LogConfig extends Base {
 	public Boolean	APPEND = true;
 	public String   DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss.S z]";
 	// 每隔STEP_TIME毫秒记录一次
-	public Long     STEP_TIME = 1L * 1000L;
+	public Long     STEP_TIME = 5L * 1000L;
 	// 每次记录STEP_LINE行
-	public Integer  STEP_LINE = 100;
+	public Integer  STEP_LINE = 5000;
 }

@@ -43,7 +43,7 @@ public class Logger {
 			LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
 
 			LogWriteThread.STEP_TIME = config.STEP_TIME;
-			LogWriteThread.STEP_TIME = config.STEP_LINE;
+			LogWriteThread.STEP_LINE = config.STEP_LINE;
 
 			logWriteThread.start();
 
@@ -63,7 +63,7 @@ public class Logger {
 		LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
 
 		LogWriteThread.STEP_TIME = config.STEP_TIME;
-		LogWriteThread.STEP_TIME = config.STEP_LINE;
+		LogWriteThread.STEP_LINE = config.STEP_LINE;
 	}
 
 	public static void destory() {

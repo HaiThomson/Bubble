@@ -112,7 +112,7 @@ public class Core {
 	 * @return
 	 */
 	public static void persistenceSession() throws SQLException {
-		if (Container.app() != null && Container.app().initSession) {
+		if (Container.app() != null && Container.app().initated && Container.app().initSession) {
 			if(!Container.app().session.saved) {
 				HashMap<String, Object> G = Container.app().Global;
 

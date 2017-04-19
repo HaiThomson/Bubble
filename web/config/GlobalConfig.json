@@ -16,7 +16,7 @@
     "FILE_PATH" : "./",
     "FILE_NAME" : "log",
     "APPEND" : "true",
-    "STEP_TIME" : "1000",
-    "STEP_LINE" : "100"
+    "STEP_TIME" : "5000",
+    "STEP_LINE" : "5000"
   }
 }

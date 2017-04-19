@@ -16,8 +16,7 @@
  */
 package source.kernel.log;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 /**
  * @author Hai Thomson
@@ -30,20 +29,19 @@ public class LogWriteThread extends Thread {
 		super(name);
 	}
 
-	protected static long STEP_TIME = 1L * 1000L;
-	protected static int STEP_LINE = 100;
+	protected static long STEP_TIME = 5L * 1000L;
+	protected static int STEP_LINE = 5000;
 
 	public void run() {
 		while (true) {
 			try {
-				long sleepTime = STEP_TIME;
+				long sleepTime = LogWriteThread.STEP_TIME;
 				if (!Logger.LOG_QUEUE.isEmpty()) {
-					sleepTime = Math.round(LogWriteThread.STEP_TIME * (1f / (Logger.LOG_QUEUE.size() / 100f)));
-					if (sleepTime >  STEP_TIME ) {
-						sleepTime = STEP_TIME;
+					sleepTime = Math.round(LogWriteThread.STEP_TIME * (1f / (Logger.LOG_QUEUE.size() / LogWriteThread.STEP_LINE)));
+
+					if (sleepTime >  LogWriteThread.STEP_TIME ) {
+						sleepTime = LogWriteThread.STEP_TIME;
 					}
-				} else {
-					sleepTime = STEP_TIME;
 				}
 
 				Thread.sleep(sleepTime);

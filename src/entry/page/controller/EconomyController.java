@@ -1,5 +1,6 @@
 package entry.page.controller;
 
+import source.kernel.Container;
 import source.kernel.controller.Controller;
 import source.module.economy.Economyindex;
 
@@ -29,6 +30,8 @@ import java.sql.SQLException;
 public class EconomyController extends Controller {
 	public String index() {
 		try {
+			Container.app().initSession = false;
+			Container.app().init();
 			Economyindex.run();
 		} catch (Exception e) {
 			return Controller.ERROR;

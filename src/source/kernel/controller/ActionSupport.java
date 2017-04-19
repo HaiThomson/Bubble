@@ -5,11 +5,13 @@ import source.kernel.Core;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.config.GlobalConfig;
+import source.kernel.log.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
@@ -18,6 +20,10 @@ import java.util.ResourceBundle;
  * @author Hai Thomson
  */
 public abstract class ActionSupport extends Base implements Servlet, ServletConfig {
+
+	public static final String NONE = "NONE";
+	public static final String SUCCESS = "SUCCESS";
+	public static final String ERROR = "ERROR";
 
 	private static final ResourceBundle lStrings = ResourceBundle.getBundle("javax.servlet.http.LocalStrings");
 
@@ -96,7 +102,23 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 			String resName = (String) Container.app().Global.get("res");
 			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
 
-			Container.app().init();
+			Method[] methods = this.getClass().getDeclaredMethods();
+			if (methods == null || methods.length == 0) {
+				Logger.warn(this.getClass().getName() + ": not have method");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				boolean found = false;
+				for (int i = 0; i < methods.length; i++) {
+					if (methodName.equals(methods[i].getName())) {
+						found = true;
+					}
+				}
+				if (!found) {
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+					return;
+				}
+			}
+
 			result = this.call(methodName);
 		} catch (Exception e) {
 			ExceptionHandler.handling(e);
