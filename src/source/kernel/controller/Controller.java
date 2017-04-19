@@ -1,4 +1,4 @@
-package source.kernel.mvc;
+package source.kernel.controller;
 
 import source.kernel.Container;
 import source.kernel.Core;

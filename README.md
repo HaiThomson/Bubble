@@ -6,20 +6,20 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 
 组成模块
 -----------
-1.3-tier		:	三层架构.<br/>
-2.ORM			:	持久化模块.<br/>
-3.View			:	支持JSP, JSON, Beetl, Velocity<br/>
+1.Controller	:	基于'Servlet 3.1'的控制器.<br/>
+2.DB			:	基于'Apache Commons DbUtils Version 1.6'重构的持久化模块.<br/>
+3.view			:	视图适配器,支持JSP, JSON, Beetl, Velocity<br/>
 4.Container		:	简易IOC容器.<br/>
-5.AOP			:   准面向切面编程.<br/>
+5.AOP			:   为开发者提供面向切面编程支持.<br/>
 6.Session		:	无状态Session.提供In-Memory RDBMS Struts, In-Memory RDBMS, Redis三种版本<br/>
-7.Cache			:	缓存系统.支持文件, 内存, 数据库缓存.内存支持Map, Redis, Memcache, Guava Cache, Ehcache.<br/>
-8.Staticize     :	页面静态化, 支持页面缓存到Cache模块.<br/>
-9.Log			:	高并发日志记录模块.<br/>
+7.Cache			:	缓存系统.内置文件, 内存, 数据库缓存.内存支持Map, Redis, Memcache, Guava Cache, Ehcache.<br/>
+8.Staticize     :	页面静态化工具, 支持页面缓存到Cache模块.<br/>
+9.Log			:	高并发下日志记录模块.<br/>
 10.OGNL			:	简易的对象导航访问工具.<br/>
-11.security		:	安全令牌, 验证码, SQL检查, XSS检查, 蜘蛛检查.<br/>
-12.plug-in		:	插件系统,支持运行期间安装卸载. <br/>
-13.crontab		:	计划任务模块,还未完成技术验证.<br/>
-14.Miscellaneous:	WEB开发中经常碰到的问题.<br/>
+11.Security		:	安全工具套装：安全令牌, 验证码, SQL检查, XSS检查, 蜘蛛检查.<br/>
+12.Plug-in		:	插件系统,支持运行期间安装卸载. <br/>
+13.Crontab		:	计划任务模块,还未完成技术验证.<br/>
+14.Miscellaneous:	解决WEB开发中经常碰到的问题.<br/>
 
 下载使用
 -----------
@@ -39,32 +39,17 @@ IDE：推荐使用IntelliJ IDEA 14.1.5+<br/>
 
 快速入门
 -----------
-Bubble采用三层架构解耦<br/>
 1.编写访问控制层代码<br/>
 ```
-@WebServlet(name = "SimpleServlet", urlPatterns = "/simple/*")
-public class SimpleServlet extends HttpServlet {
-
-	public static final String[] RES_ARRAY = {
-			"", "index.htm", "show.htm",
-	};
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Container.creatApp(request, response);
-		String resName = (String) Container.app().Global.get("res");
-		String moduleName = (ArraysHelper.inArrays(RES_ARRAY, resName) && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
-
+@WebServlet(name = "EconomyController", urlPatterns = "/economy/*")
+public class EconomyController extends ActionSupport {
+	public String index() {
 		try {
-			Container.app().init();
-			Class moduleClass = Class.forName(GlobalConfig.SOURCE_PATH  + ".module.simple.Simple" + moduleName);
-			moduleClass.getMethod("run").invoke(null);
+			Economyindex.run();
 		} catch (Exception e) {
-			ExceptionHandler.handling(e);
+			return Controller.ERROR;
 		}
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		this.doGet(request, response);
+		return "/economy/index.jsp";
 	}
 }
 ```
@@ -84,13 +69,9 @@ public class common_session_struct extends Table {
 ```
 3.编写业务模块<br/>
 ```
-public class Simpleindex {
-	public static void run() throws Exception {
-		// 两种写法
-		Container.app().Global.put("allsession", ((common_session_struct) Container.table("common_session_struct")).fetchAll());
+public class Economyindex {
+	public static void run() throws NoSuchMethodException, InvocationTargetException {
 		Container.app().Global.put("allsession", Container.table("common_session_struct").call("fetchAll"));
-
-		Core.forward("/simple/index.jsp");
 	}
 }
 ```
