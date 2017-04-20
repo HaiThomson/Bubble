@@ -8,7 +8,7 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 -----------
 1.Controller	:	基于'Servlet 3.1'的控制器.<br/>
 2.DB			:	基于'Apache Commons DbUtils Version 1.6'重构的持久化模块.<br/>
-3.view			:	视图适配器,支持JSP, JSON, Beetl, Velocity<br/>
+3.View			:	视图适配器,支持JSP, JSON, Beetl, Velocity<br/>
 4.Container		:	简易IOC容器.<br/>
 5.AOP			:   为开发者提供面向切面编程支持.<br/>
 6.Session		:	无状态Session.提供In-Memory RDBMS Struts, In-Memory RDBMS, Redis三种版本<br/>
@@ -46,10 +46,10 @@ public class EconomyController extends ActionSupport {
 	public String index() {
 		try {
 			Economyindex.run();
+			return "/economy/index.jsp";
 		} catch (Exception e) {
 			return Controller.ERROR;
 		}
-		return "/economy/index.jsp";
 	}
 }
 ```

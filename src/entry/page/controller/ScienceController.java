@@ -26,11 +26,11 @@ public class ScienceController extends ActionSupport {
 
 		try {
 			Economyindex.run();
+			return "/economy/index.jsp";
 		} catch (Exception e) {
 			Logger.error(this.getClass().getName() + " " + e.getClass() + " " + e.getMessage());
 			return ActionSupport.ERROR;
 		}
-		return "/economy/index.jsp";
 	}
 
 	public String log() {
@@ -54,10 +54,9 @@ public class ScienceController extends ActionSupport {
 			count = count + 1L;
 			Container.app().request.getServletContext().setAttribute("count", count);
 
+			return ActionSupport.NONE;
 			} catch (Exception e) {
 				return ActionSupport.ERROR;
 			}
-
-		return ActionSupport.NONE;
 	}
 }

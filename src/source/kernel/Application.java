@@ -22,6 +22,7 @@ import source.kernel.helper.ArraysHelper;
 import source.kernel.helper.MD5Helper;
 import source.kernel.session.Session;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,11 +60,11 @@ public class Application {
 
 	protected Application() {}
 
-	public static Application instance(HttpServletRequest request, HttpServletResponse response) {
+	public static Application instance(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		return new Application(request, response);
 	}
 
-	protected Application(HttpServletRequest request, HttpServletResponse response) {
+	protected Application(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 不能打乱已有初始化的先后顺序
 		this.request = request;
 		this.response = response;
@@ -199,15 +200,9 @@ public class Application {
 		return false;
 	}
 
-	protected void initInput() {
-		// this.request.getPathInfo()不适用于Filter
+	protected void initInput() throws ServletException, IOException {
 		// 取得请求的资源名
-		String resourceName = this.request.getPathInfo();
-		if (resourceName != null) {
-			this.value.put("res", this.request.getPathInfo().replaceAll("/", ""));
-		} else {
-			this.value.put("res", null);
-		}
+		this.value.put("res", Core.getRequestResource(this.request));
 
 		// 取得请求的模块名
 		String moduleName = this.request.getParameter("mod");

@@ -33,9 +33,9 @@ public class EconomyController extends Controller {
 			Container.app().initSession = false;
 			Container.app().init();
 			Economyindex.run();
+			return "/economy/index.jsp";
 		} catch (Exception e) {
 			return Controller.ERROR;
 		}
-		return "/economy/index.jsp";
 	}
 }

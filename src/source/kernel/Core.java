@@ -28,6 +28,7 @@ import source.table.common_syscache;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -50,6 +51,45 @@ import java.util.*;
  * @author Hai Thomson
  */
 public class Core {
+
+	/**
+	 * 获取用户请求的资源全名，不包含路径。
+	 * 该方法在根下无法保证返回结果正确性.
+	 * 请不要在过滤'/'的过滤器内使用该方法。
+	 * @param request
+	 * @return
+	 */
+	public static String getRequestResource(HttpServletRequest request) throws ServletException, IOException {
+		String resource = null;
+
+		String resourceName = request.getPathInfo();
+		if (resourceName != null) {
+			resource = request.getPathInfo().replaceAll("/", "");
+		} else {
+			resource = null;
+		}
+
+		if (resource == null) {
+			// 从ServletPath开始
+			StringBuffer stringBuffer = new StringBuffer(request.getServletPath());
+			// 刨去第一个'/'
+			stringBuffer.deleteCharAt(0);
+			// 刨去过滤路径 + 第二个'/'
+			if (stringBuffer.length() == 0) {
+				// 根
+				throw new ServletException("Root resource not supported");
+			} else if (stringBuffer.indexOf("/") > 0) {
+				stringBuffer.delete(0, stringBuffer.indexOf("/") + 1);
+			} else {
+				// 根下资源
+				// 匹配根下资源请使用绝对路径以保证程序健壮性
+				throw new ServletException("Root resource not supported");
+			}
+			resource = stringBuffer.toString();
+		}
+
+		return resource;
+	}
 
 	// RFC3986
 	// 应用查表法实现可以提高效率

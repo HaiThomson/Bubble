@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author Hai Thomson
  */
-public abstract class DataBaseDriver extends Base {
+public abstract class DataBaseDriver {
 
     protected String tablepre = "";
     protected Connection connection = null;

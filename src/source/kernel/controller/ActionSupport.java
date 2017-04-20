@@ -1,6 +1,5 @@
 package source.kernel.controller;
 
-import source.kernel.Container;
 import source.kernel.Core;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
@@ -98,8 +97,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 		Object result = null;
 
 		try {
-			Container.creatApp(request, response);
-			String resName = (String) Container.app().Global.get("res");
+			String resName = Core.getRequestResource(request);
 			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();
@@ -124,10 +122,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 			ExceptionHandler.handling(e);
 		}
 
-		this.loadView(result);
-	}
-
-	public void loadView(Object result) throws IOException, ServletException {
+		// 加载视图
 		if (result != null) {
 			switch (result.toString()) {
 				// 额外功能
@@ -136,7 +131,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 					// Core.loadView(""); // 默认跳转至监听目录
 					return;
 				case Controller.ERROR :
-					Container.app().response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return ;
 				case Controller.NONE :
 					// 不加载视图层
@@ -150,5 +145,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 			// 不加载视图层
 			return ;
 		}
+
 	}
+
 }

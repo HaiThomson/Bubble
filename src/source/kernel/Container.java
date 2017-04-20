@@ -22,8 +22,10 @@ import source.kernel.env.ThreadContextDestroyer;
 import source.kernel.log.Logger;
 import source.kernel.memory.Memory;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -42,12 +44,12 @@ public class Container {
 		return (Application) Container.threadApp.get();
 	}
 
-	public static void creatApp(HttpServletRequest request, HttpServletResponse response) {
+	public static void creatApp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 如果WEB容器内部跳转，清理资源
 		if (request.getAttribute("javax.servlet.include.request_uri") != null) {
 			// 如果使用框架内跳转，即跳转至其它主控制器的子模块.不会执行这段代码.但需要和其它主控制器作者沟通是否兼容
 
-			// 应该在这里进行错误处理
+			// WEB容器内部跳转应该在这里进行错误处理
 			try {
 				ThreadContextDestroyer.destroyResource();
 			} catch (SQLException e) {
