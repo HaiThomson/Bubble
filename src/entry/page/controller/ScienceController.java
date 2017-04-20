@@ -17,7 +17,7 @@ import java.sql.SQLException;
  */
 @WebServlet(name = "ScienceController", urlPatterns = "/science/*")
 public class ScienceController extends ActionSupport {
-	public String index() throws SQLException {
+	public String index() {
 
 		// 测试异常
 		/*if (1 == 1) {

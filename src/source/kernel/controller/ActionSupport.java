@@ -1,5 +1,6 @@
 package source.kernel.controller;
 
+import source.kernel.Container;
 import source.kernel.Core;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
@@ -97,7 +98,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 		Object result = null;
 
 		try {
-			String resName = Core.getRequestResource(request);
+			String resName = (String) Core.getRequestResource(request);
 			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();
@@ -117,6 +118,7 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 				}
 			}
 
+			Container.creatApp(request, response);
 			result = this.call(methodName);
 		} catch (Exception e) {
 			ExceptionHandler.handling(e);

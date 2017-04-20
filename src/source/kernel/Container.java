@@ -87,6 +87,12 @@ public class Container {
 		return Container.makeTableObject(name, false);
 	}
 
+	/**
+	 *
+	 * @param name
+	 * @param extendable 是否启用SuperContainer（对象池）扩展支持
+	 * @return
+	 */
 	private static Base makeTableObject(String name, boolean extendable) {
 		String classPath = GlobalConfig.SOURCE_PATH + ".table." + name;
 		if (extendable) {

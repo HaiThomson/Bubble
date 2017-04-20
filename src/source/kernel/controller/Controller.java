@@ -1,5 +1,6 @@
 package source.kernel.controller;
 
+import source.kernel.Container;
 import source.kernel.Core;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
@@ -80,6 +81,7 @@ public abstract class Controller extends Base implements Filter {
 					filterChain.doFilter(servletRequest, servletResponse);
 					return;
 				} else {
+					Container.creatApp(request, response);
 					result = this.call(methodName);
 				}
 			}
