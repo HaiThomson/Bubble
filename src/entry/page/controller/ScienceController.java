@@ -2,12 +2,12 @@ package entry.page.controller;
 
 import source.kernel.Container;
 import source.kernel.controller.ActionSupport;
-import source.kernel.controller.Controller;
+import source.kernel.helper.StackTraceHelper;
 import source.kernel.log.Logger;
 import source.module.economy.Economyindex;
+import source.module.economy.vo.NewsJavaBean;
 
 import javax.servlet.annotation.WebServlet;
-import java.sql.SQLException;
 
 /**
  *
@@ -17,19 +17,48 @@ import java.sql.SQLException;
  */
 @WebServlet(name = "ScienceController", urlPatterns = "/science/*")
 public class ScienceController extends ActionSupport {
-	public String index() {
-
-		// 测试异常
-		/*if (1 == 1) {
-			throw new SQLException("Test Exception");
-		}*/
-
+	/*public String index() {
 		try {
+			// Container.app().initSession = false;
+			// Container.app().init();
 			Economyindex.run();
 			return "/economy/index.jsp";
 		} catch (Exception e) {
-			Logger.error(this.getClass().getName() + " " + e.getClass() + " " + e.getMessage());
+			Logger.error(this.getClass().getName() + " " + e.getClass() + " " + e.getMessage() + " " + e.getCause().getMessage());
 			return ActionSupport.ERROR;
+		}
+	}*/
+
+	/*public String index() throws Exception {
+		// Container.app().initSession = false;
+		// Container.app().init();
+		Economyindex.run();
+		return "/economy/index.jsp";
+	}*/
+
+	public String index() {
+		try {
+			Container.app().initSession = false;
+			Container.app().init();
+
+			Economyindex.run();
+			return "/economy/index.jsp";
+		} catch (Exception e) {
+			if (e.getMessage() == null || e.getMessage().equals("")) {
+				Logger.error(this.getClass().getName() + " " + e.getClass() + " " + StackTraceHelper.getStackTrace(e));
+			} else {
+				Logger.error(this.getClass().getName() + " " + e.getClass() + " " + e.getMessage() + " " + e.getCause().getMessage());
+			}
+			return ActionSupport.ERROR;
+		}
+	}
+
+	public void para(NewsJavaBean news, NewsJavaBean newss) {
+		if (news != null) {
+			System.out.println(news.toString());
+		}
+		if (newss != null) {
+			System.out.println(newss.toString());
 		}
 	}
 
@@ -55,8 +84,8 @@ public class ScienceController extends ActionSupport {
 			Container.app().request.getServletContext().setAttribute("count", count);
 
 			return ActionSupport.NONE;
-			} catch (Exception e) {
-				return ActionSupport.ERROR;
-			}
+		} catch (Exception e) {
+			return ActionSupport.ERROR;
+		}
 	}
 }

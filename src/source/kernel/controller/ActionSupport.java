@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
@@ -107,19 +108,41 @@ public abstract class ActionSupport extends Base implements Servlet, ServletConf
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			} else {
 				boolean found = false;
+				int subscript = 0;
 				for (int i = 0; i < methods.length; i++) {
 					if (methodName.equals(methods[i].getName())) {
 						found = true;
+						subscript = i;
 					}
 				}
+
 				if (!found) {
 					response.sendError(HttpServletResponse.SC_NOT_FOUND);
 					return;
+				} else {
+					Container.creatApp(request, response);
+
+					int parameterCount = methods[subscript].getParameterCount();
+					if (parameterCount == 0) {
+						result = this.call(methodName);
+					} else {
+						Parameter[] parameters = methods[subscript].getParameters();
+						Object[] parameterValue = null;
+						if (parameters != null && parameters.length > 0) {
+							parameterValue = new Object[parameters.length];
+
+							for (int i = 0; i < parameters.length; i++) {
+								Class<?> type = parameters[i].getType();
+								parameterValue[i] = Core.fillFormBean(type.newInstance());
+							}
+
+							result = this.call(methodName, parameterValue);
+						} else {
+							result = this.call(methodName);
+						}
+					}
 				}
 			}
-
-			Container.creatApp(request, response);
-			result = this.call(methodName);
 		} catch (Exception e) {
 			ExceptionHandler.handling(e);
 		}

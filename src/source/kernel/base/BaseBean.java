@@ -116,7 +116,7 @@ public abstract class BaseBean extends Base {
 				return super.toString();
 			}
 		} catch (Exception e) {
-			ExceptionHandler.handling(e, ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
+			// ExceptionHandler.handling(e, ExceptionHandler.EXCEPTION_SHOW_OFF, ExceptionHandler.EXCEPTION_LOG_OFF, ExceptionHandler.EXCEPTION_HALT_ON);
 			return super.toString();
 		}
 	}
