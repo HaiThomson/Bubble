@@ -24,8 +24,8 @@ import source.kernel.base.Base;
 public class LogConfig extends Base {
 	public String   LEVEL = "ALL";
 	public String   FILE_PATH = "./";
-	public String   FILE_NAME = "log";
-	public String   FILE_NAME_WITH_DATE = "yyyy-MM-dd";
+	public String   FILE_NAME = "log_";
+	public String   FILE_NAME_WITH_DATE = "yyyy-MM-dd'.log'";
 	public Boolean	APPEND = true;
 	public String   DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss.S z]";
 	// 每隔STEP_TIME毫秒记录一次

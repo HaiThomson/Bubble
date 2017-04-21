@@ -14,7 +14,8 @@
     "LEVEL" : "ALL",
     "DATE_PATTERN" : "[yyyy-MM-dd HH:mm:ss.S z]",
     "FILE_PATH" : "./",
-    "FILE_NAME" : "log",
+    "FILE_NAME" : "log_",
+    "FILE_NAME_WITH_DATE" : "yyyy-MM-dd'.log'",
     "APPEND" : "true",
     "STEP_TIME" : "5000",
     "STEP_LINE" : "5000"

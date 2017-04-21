@@ -18,6 +18,9 @@ package source.kernel.log;
 
 import source.kernel.helper.ArraysHelper;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -40,17 +43,12 @@ public class Logger {
 		if (!Logger.initated) {
 			Logger.LOGCONFIG = config;
 
-			LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
-
 			LogWriteThread.STEP_TIME = config.STEP_TIME;
 			LogWriteThread.STEP_LINE = config.STEP_LINE;
 
 			logWriteThread.start();
 
-			LogNode end = new LogNode();
-			end.level = "INFO";
-			end.msg = "日志组件开始工作";
-			LoggerWriter.writeLog(end);
+			Logger.info("日志组件开始工作");
 
 			Logger.initated = true;
 		}
@@ -60,8 +58,6 @@ public class Logger {
 	public static void setLogConfig(LogConfig config) {
 		Logger.LOGCONFIG = config;
 
-		LoggerWriter.simpleDateFormat = new SimpleDateFormat(config.DATE_PATTERN);
-
 		LogWriteThread.STEP_TIME = config.STEP_TIME;
 		LogWriteThread.STEP_LINE = config.STEP_LINE;
 	}
@@ -69,20 +65,30 @@ public class Logger {
 	public static void destory() {
 		logWriteThread.interrupt();
 
-		if (!Logger.LOG_QUEUE.isEmpty()) {
-			for (int i = 0; i < LOG_QUEUE.size(); i++) {
-				if (!Logger.LOG_QUEUE.isEmpty()) {
-					LoggerWriter.writeLog(Logger.LOG_QUEUE.remove());
-				} else {
-					break;
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(LoggerWriter.getLogFilePath(), true);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Logger.LOGCONFIG.DATE_PATTERN);
+
+			if (!Logger.LOG_QUEUE.isEmpty()) {
+				for (int i = 0; i < LOG_QUEUE.size(); i++) {
+					if (!Logger.LOG_QUEUE.isEmpty()) {
+						LoggerWriter.writeLog(Logger.LOG_QUEUE.remove(), simpleDateFormat, fileOutputStream);
+					} else {
+						break;
+					}
 				}
 			}
+
+			LogNode end = new LogNode();
+			end.level = "INFO";
+			end.msg = "已写入所有日志";
+			LoggerWriter.writeLog(end, simpleDateFormat, fileOutputStream);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		LogNode end = new LogNode();
-		end.level = "INFO";
-		end.msg = "已写入所有日志";
-		LoggerWriter.writeLog(end);
 	}
 
 	/**

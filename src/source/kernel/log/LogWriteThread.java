@@ -17,6 +17,10 @@
 package source.kernel.log;
 
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Hai Thomson
@@ -49,13 +53,25 @@ public class LogWriteThread extends Thread {
 				// Nothing to do
 			}
 
-			for (int i = 0; i < LogWriteThread.STEP_LINE; i++) {
-				if (!Logger.LOG_QUEUE.isEmpty()) {
-					LoggerWriter.writeLog(Logger.LOG_QUEUE.remove());
-				} else {
-					break;
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream(LoggerWriter.getLogFilePath(), true);
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Logger.LOGCONFIG.DATE_PATTERN);
+				for (int i = 0; i < LogWriteThread.STEP_LINE; i++) {
+					if (!Logger.LOG_QUEUE.isEmpty()) {
+						LoggerWriter.writeLog(Logger.LOG_QUEUE.remove(), simpleDateFormat, fileOutputStream);
+					} else {
+						break;
+					}
 				}
+				fileOutputStream.close();
+			} catch (FileNotFoundException e) {
+				// 写到Tomcat里面
+				e.printStackTrace();
+			} catch (IOException e) {
+				// 写到Tomcat里面
+				e.printStackTrace();
 			}
+
 		}
 	}
 }
