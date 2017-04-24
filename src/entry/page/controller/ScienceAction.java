@@ -11,12 +11,10 @@ import javax.servlet.annotation.WebServlet;
 
 /**
  *
- * 你喜欢的都在这里
- *
  * @author Hai Thomson
  */
-@WebServlet(name = "ScienceController", urlPatterns = "/science/*")
-public class ScienceController extends ActionSupport {
+@WebServlet(name = "ScienceAction", urlPatterns = "/science/*")
+public class ScienceAction extends ActionSupport {
 	/*public String index() {
 		try {
 			// Container.app().initSession = false;
@@ -38,9 +36,6 @@ public class ScienceController extends ActionSupport {
 
 	public String index() {
 		try {
-			Container.app().initSession = false;
-			Container.app().init();
-
 			Economyindex.run();
 			return "/economy/index.jsp";
 		} catch (Exception e) {
@@ -64,9 +59,6 @@ public class ScienceController extends ActionSupport {
 
 	public String log() {
 		try {
-			Container.app().initSession = false;
-			Container.app().init();
-
 
 			Long count = (Long) Container.app().request.getServletContext().getAttribute("count");
 			if (count == null) {

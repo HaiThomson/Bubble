@@ -1,8 +1,9 @@
 {
-  "_GlobalNotes" : "这是注释，请无视",
+  "_GlobalNotes" : "这是注释示例",
 
-  "_FILE_CACHE_DIRECTORY" : "文件缓存位置，精确到文件夹，最后以 / 结尾。默认值，WEB容器启动路径",
-  "FILE_CACHE_DIRECTORY"  : "./cache/",
+  "_FILE_CACHE_DIRECTORY" : "文件缓存位置,精确到文件夹,最后以'/'结尾.默认值:WEB容器启动路径",
+  "_FILE_CACHE_DIRECTORY_Notes" : "WEB集群模式下,不能将各个WEB容器的缓存位置设为一处.原因,还未进行大规模集群下高并发访问缓存有效性验证",
+  "FILE_CACHE_DIRECTORY"  : "../cache/",
 
   "COOKIE_CONFIG" : {
     "COOKIE_PRE" : "bubble_",
@@ -13,7 +14,7 @@
   "LOG_CONFIG" : {
     "LEVEL" : "ALL",
     "DATE_PATTERN" : "[yyyy-MM-dd HH:mm:ss.S z]",
-    "FILE_PATH" : "./",
+    "FILE_PATH" : "../log/",
     "FILE_NAME" : "log_",
     "FILE_NAME_WITH_DATE" : "yyyy-MM-dd'.log'",
     "APPEND" : "true",

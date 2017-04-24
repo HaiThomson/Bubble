@@ -38,40 +38,39 @@ public class GlobalConfig extends Base {
         return globalConfig;
     }
 
-    private static final GlobalConfig globalConfig = new GlobalConfig();
+    protected static final GlobalConfig globalConfig = new GlobalConfig();
 
-    // 代码主目录
+    // 代码主目录, 可以用支持重构的IDE更改source路径.如.com.hai.bubble
     public static String SOURCE_PATH = "source";
+    // 项目编码
     public static String JAVA_ENCODING = "UTF-8";
+    // 输出编码
     public static String OUTPUT_CHARSET = "UTF-8";
-
-    // 是否开启全局调试模式
-    public static Boolean DEBUG = true;
-
-    // 日志配置
-    public static LogConfig LOG_CONFIG = new LogConfig();
-
-    // 文件缓存位置
-    public static String FILE_CACHE_DIRECTORY = "./cache/";
-
+    // 全局访问资源后缀
     public static String RES_SUFFIX = ".htm";
-
-    // 连接池配置类型
-    public static String CONNECTIONPOOL_TYPE = "c3p0";
-    // 连接池配置文件位置
-    public static String CONNECTIONPOOL_CONFIG_PATH = "/config/c3p0-config.xml";
+    // 是否开启调试模式.生产环境请关闭
+    public static Boolean DEBUG = true;
+    // Cookie配置
+    public static CookieConfig COOKIE_CONFIG = new CookieConfig();
+    // AUTHKEY. 随意输一个大于8位长的字符串就可以
+    public static String SECURITY_AUTHKEY = "asdfasfas";
+    // 是否启用内存XSS检查功能,开启后拒绝有XSS嫌疑的访问
+    public static boolean SECURITY_URLXSSDEFEND = true;
+    // 是否启用爬虫检查功能,开启后拒绝爬虫访问
+    public static boolean SECURITY_ROBOOT = true;
 
     // DataBase配置
     public static DatabaseConfig DATABASE_CONFIG = new DatabaseConfig();
-    // Cookie配置
-    public static CookieConfig COOKIE_CONFIG = new CookieConfig();
-    // Session配置
+
+    // Session模块配置
     public static SessionConfig SESSION_CONFIG = new SessionConfig();
 
-    public static String SECURITY_AUTHKEY = "asdfasfas";
+    // Cache相关
+    // 文件缓存位置
+    public static String FILE_CACHE_DIRECTORY = "./cache/";
 
-    // 是否启用内存XSS检查功能
-    public static boolean SECURITY_URLXSSDEFEND = true;
+    // 日志配置
+    public static LogConfig LOG_CONFIG = new LogConfig();
 
     public static void init(String path) {
         try {
@@ -90,7 +89,7 @@ public class GlobalConfig extends Base {
         }
     }
 
-    private static void setItemValue(Map config) throws ClassCastException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    protected static void setItemValue(Map config) throws ClassCastException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Field[] declaredFields = GlobalConfig.class.getFields();
         for(Field item : declaredFields) {
             Object value = config.get(item.getName());
@@ -120,7 +119,7 @@ public class GlobalConfig extends Base {
     }
 
     // sub_itemObject 纯粹的引用
-    private static Object createSub_itemValue(String typeName, Map config) throws ClassCastException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    protected static Object createSub_itemValue(String typeName, Map config) throws ClassCastException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Class sub_itemClass = Class.forName(typeName);
         Object sub_itemObject = sub_itemClass.newInstance();
         Field[] declaredFields = sub_itemClass.getFields();
@@ -148,7 +147,7 @@ public class GlobalConfig extends Base {
         return sub_itemObject;
     }
 
-    private static String loadConfigFile(String path) throws IOException {
+    protected static String loadConfigFile(String path) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(path), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = null;

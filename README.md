@@ -12,8 +12,8 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 	<td>基于'Servlet 3.1'的控制器</td>
 </tr>
 <tr>
-	<td>DB</td>
-	<td>基于'Apache Commons DbUtils Version 1.6'重构的持久化模块</td>
+	<td>Global</td>
+	<td>数据集装箱</td>
 </tr>
 <tr>
 	<td>View</td>
@@ -26,6 +26,10 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 <tr>
 	<td>AOP</td>
 	<td>为开发者提供面向切面编程支持</td>
+</tr>
+<tr>
+	<td>DB</td>
+	<td>基于'Apache Commons DbUtils Version 1.6'重构的持久化模块</td>
 </tr>
 <tr>
 	<td>Session</td>
@@ -41,7 +45,7 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 </tr>
 <tr>
 	<td>Log</td>
-	<td>高并发下日志记录模块</td>
+	<td>日志记录模块,支持超高并发,丝毫不影响应用性能</td>
 </tr>
 <tr>
 	<td>OGNL</td>
@@ -57,7 +61,7 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 </tr>
 <tr>
 	<td>Crontab</td>
-	<td>计划任务模块,还未完成技术验证</td>
+	<td>计划任务</td>
 </tr>
 <tr>
 	<td>Miscellaneous</td>

@@ -13,75 +13,111 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 /**
- * 过滤器是拦截器，不是资源.访问路径还是要找原来访问路径.找不到报错
- * org.apache.jasper.servlet.JspServlet.handleMissingResource File [**********] not found
- * 用拦截器做Controller的框架都不会继续向下传递职责链，而是return 向上传递职责链
- * 所以,请将其它拦截器至于该拦截器之前。
- * @since 1.7
  * @author Hai Thomson
  */
-public abstract class Controller extends Base implements Filter {
+public abstract class Action extends Base implements Servlet, ServletConfig {
 
 	public static final String NONE = "NONE";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String ERROR = "ERROR";
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
+	private static final ResourceBundle lStrings = ResourceBundle.getBundle("javax.servlet.http.LocalStrings");
 
+	private transient ServletConfig config;
+
+	public String getInitParameter(String name) {
+		return this.getServletConfig().getInitParameter(name);
 	}
 
-	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+	public Enumeration<String> getInitParameterNames() {
+		return this.getServletConfig().getInitParameterNames();
+	}
+
+	public ServletConfig getServletConfig() {
+		return this.config;
+	}
+
+	public ServletContext getServletContext() {
+		return this.getServletConfig().getServletContext();
+	}
+
+	public String getServletInfo() {
+		return "";
+	}
+
+	public void destroy() {
+	}
+
+	public void init(ServletConfig config) throws ServletException {
+		this.config = config;
+		this.init();
+	}
+
+	public void init() throws ServletException {
+	}
+
+	public void log(String msg) {
+		this.getServletContext().log(this.getServletName() + ": " + msg);
+	}
+
+	public void log(String message, Throwable t) {
+		this.getServletContext().log(this.getServletName() + ": " + message, t);
+	}
+
+	public String getServletName() {
+		return this.config.getServletName();
+	}
+
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		HttpServletRequest request = null;
 		HttpServletResponse response = null;
 		try {
-			request = (HttpServletRequest) servletRequest;
-			response = (HttpServletResponse) servletResponse;
+			request = (HttpServletRequest)req;
+			response = (HttpServletResponse)res;
 		} catch (ClassCastException e) {
 			throw new ServletException("non-HTTP request or response");
 		}
 
+		String method = request.getMethod();
+		if (method.equals("GET") || method.equals("POST")) {
+			this.service(request, response);
+		} else {
+			String errMsg = lStrings.getString("http.method_not_implemented");
+			Object[] errArgs = new Object[]{method};
+			errMsg = MessageFormat.format(errMsg, errArgs);
+			// 501
+			response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
+		}
+	}
+
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Object result = null;
 
 		try {
-			// 从ServletPath开始
-			StringBuffer stringBuffer = new StringBuffer(request.getServletPath());
-			// 刨去第一个'/'
-			stringBuffer.deleteCharAt(0);
-			// 刨去过滤路径 + 第二个'/'
-			if (stringBuffer.length() == 0) {
-				throw new ServletException(this.getClass().getName() + ". The subclass of Controller does not support filtering the root directory!");
-			} else if (stringBuffer.indexOf("/") > 0) {
-				stringBuffer.delete(0, stringBuffer.indexOf("/") + 1);
-			} else {
-				throw new ServletException(this.getClass().getName() + ". The subclass of Controller does not support filtering the root directory!");
-			} // 超过一层的路径无法被鉴定 ['Controller' 的子类过滤项目根] 这种情况.
-
-			String resName = stringBuffer.toString();
-			String methodName = (resName.equals("") ? "index" : resName).replaceAll(GlobalConfig.RES_SUFFIX, "");
+			String resName = (String) Core.getRequestResource(request);
+			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();
 			if (methods == null || methods.length == 0) {
 				Logger.warn(this.getClass().getName() + ": not have method");
-				filterChain.doFilter(servletRequest, servletResponse);
-				return;
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			} else {
 				boolean found = false;
 				int subscript = 0;
 				for (int i = 0; i < methods.length; i++) {
-					// System.out.println(methodName + " " + methods[i].getName());
 					if (methodName.equals(methods[i].getName()) && methods[subscript].getName().charAt(0) != '_') {
-						// System.out.println(methodName + " " + methods[i].getName());
 						found = true;
 						subscript = i;
 					}
 				}
 
 				if (!found) {
-					filterChain.doFilter(servletRequest, servletResponse);
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
 					return;
 				} else {
 					this._createApp(request, response);
@@ -110,6 +146,7 @@ public abstract class Controller extends Base implements Filter {
 							result = this.call(methodName);
 						}
 					}
+
 				}
 			}
 
@@ -129,7 +166,7 @@ public abstract class Controller extends Base implements Filter {
 						Core.forward(result.toString());
 				}
 			} else {
-				// 不加载视图
+				// 不加载视图层
 			}
 
 			if (!this._runAfterAspect(request, response, methodName)) {
@@ -139,6 +176,7 @@ public abstract class Controller extends Base implements Filter {
 		} catch (Exception e) {
 			ExceptionHandler.handling(e);
 		}
+
 	}
 
 	protected void _createApp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -171,10 +209,5 @@ public abstract class Controller extends Base implements Filter {
 	 */
 	protected boolean _runAfterAspect(HttpServletRequest request, HttpServletResponse response, String methodName) throws Exception {
 		return Boolean.TRUE;
-	}
-
-	@Override
-	public void destroy() {
-
 	}
 }

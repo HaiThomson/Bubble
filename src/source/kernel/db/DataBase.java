@@ -269,6 +269,11 @@ public class DataBase {
         return DataBase.insert(sql);
     }
 
+    public static Object insert(String table, Object data) throws SQLException {
+        String sql = DataBase.getDriver().makeInsert(table, data);
+        return DataBase.insert(sql);
+    }
+
     /**
      * 增删改，只返回受影响的行数
      * @param sql
@@ -310,12 +315,27 @@ public class DataBase {
         return DataBase.update(sql);
     }
 
+    public static int update(String table, Object data, Object condition) throws SQLException {
+        String sql = DataBase.getDriver().makeUpdate(table, data, condition);
+        return DataBase.update(sql);
+    }
+
     public static int update(String table, Map<String, Object> data, String condition) throws SQLException {
         String sql = DataBase.getDriver().makeUpdate(table, data, condition);
         return DataBase.update(sql);
     }
 
+    public static int update(String table, Object data, String condition) throws SQLException {
+        String sql = DataBase.getDriver().makeUpdate(table, data, condition);
+        return DataBase.update(sql);
+    }
+
     public static int delete(String table, Map<String, Object> condition) throws SQLException {
+        String sql = DataBase.getDriver().makeDelete(table, condition);
+        return DataBase.update(sql);
+    }
+
+    public static int delete(String table, Object condition) throws SQLException {
         String sql = DataBase.getDriver().makeDelete(table, condition);
         return DataBase.update(sql);
     }

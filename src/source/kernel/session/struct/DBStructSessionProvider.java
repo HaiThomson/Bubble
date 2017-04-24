@@ -108,12 +108,7 @@ public class DBStructSessionProvider extends SessionProvider {
 		this.set("sessionid", sessionid);
 		this.set("ip", ip);
 		this.set("userid", userid);
-		if (userid != null && !userid.equals("")) {
-			Map user = Core.getUserByUid(userid);
-			if (user != null && user.get("invisible") != null) {
-				this.set("invisible", user.get("invisible"));
-			}
-		}
+
 		this.set("lastactivity", Container.app().TIMESTAMP);
 	}
 

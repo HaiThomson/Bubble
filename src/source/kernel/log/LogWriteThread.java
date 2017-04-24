@@ -17,6 +17,7 @@
 package source.kernel.log;
 
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,6 +55,15 @@ public class LogWriteThread extends Thread {
 			}
 
 			try {
+
+				File logFile = new File(LoggerWriter.getLogFilePath());
+				if (!logFile.exists()) {
+					if (!logFile.getParentFile().exists()) {
+						logFile.getParentFile().mkdirs();
+					}
+					logFile.createNewFile();
+				}
+
 				FileOutputStream fileOutputStream = new FileOutputStream(LoggerWriter.getLogFilePath(), true);
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Logger.LOGCONFIG.DATE_PATTERN);
 				for (int i = 0; i < LogWriteThread.STEP_LINE; i++) {

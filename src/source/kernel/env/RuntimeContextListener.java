@@ -93,7 +93,7 @@ public class RuntimeContextListener implements ServletContextListener {
 
     private void initComboPooledDataSource(ServletContextEvent servletContextEvent) {
         try {
-            ConnectionPooling.init(GlobalConfig.CONNECTIONPOOL_TYPE, servletContextEvent.getServletContext().getResource(GlobalConfig.CONNECTIONPOOL_CONFIG_PATH).getPath());
+            ConnectionPooling.init(GlobalConfig.DATABASE_CONFIG.CONNECTIONPOOL_TYPE, servletContextEvent.getServletContext().getResource(GlobalConfig.DATABASE_CONFIG.CONNECTIONPOOL_CONFIG_PATH).getPath());
         } catch (MalformedURLException e) {
             throw new RuntimeException("未能加载到连接池配置文件! " + e.getMessage());
         }

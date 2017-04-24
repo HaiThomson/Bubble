@@ -352,6 +352,9 @@ public class Application {
 
 			// null 指 SessionConfig
 			this.session = new Session(GlobalConfig.SESSION_CONFIG);
+			// 处于安全考虑,要求传入userid. SessiodID可以穷举, 而Session + UserID组合将无限增加攻击难度.
+			// 对于用到Session的WEB应用, userid肯定有的.不行传入"0"好了，"0"代表Guest
+			// 要求传入IP，则有各种好处.安全检测,过滤,统计
 			this.session.init(requestSessionid, (String) this.value.get("clientip"), (String) this.value.get("userid"));
 			this.value.put("sessionid", this.session.get("sessionid"));
 

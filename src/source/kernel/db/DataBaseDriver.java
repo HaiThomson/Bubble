@@ -109,17 +109,25 @@ public abstract class DataBaseDriver {
 
     protected abstract String makeTruncate(String table);
 
+    protected abstract String makeUpdate(String table, Object data, String condition) throws SQLException;
+
     protected abstract String makePagination(String table, String condition, String sort, int start, int limit);
 
     protected abstract String makeSelectTableField(String table);
 
     protected abstract String makeInsert(String table, Map<String, Object> data);
 
+    protected abstract String makeInsert(String table, Object data) throws SQLException;
+
     protected abstract String makeDelete(String table, Map<String, Object> condition);
+
+    protected abstract String makeDelete(String table, Object condition) throws SQLException;
 
     protected abstract String makeDelete(String table, String condition);
 
     protected abstract String makeUpdate(String table, Map<String, Object> data, Map<String, Object> condition);
+
+    protected abstract String makeUpdate(String table, Object data, Object condition) throws SQLException;
 
     protected abstract String makeUpdate(String table, Map<String, Object> data, String condition);
 

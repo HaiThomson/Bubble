@@ -16,7 +16,6 @@
  */
 package source.kernel.session;
 
-import source.kernel.base.Base;
 import source.kernel.security.token.GeneralToken;
 import source.kernel.session.struct.DBStructSessionProvider;
 

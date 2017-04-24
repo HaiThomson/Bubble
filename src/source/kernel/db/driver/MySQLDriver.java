@@ -18,6 +18,12 @@ package source.kernel.db.driver;
 
 import source.kernel.db.DataBaseDriver;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +45,17 @@ public class MySQLDriver extends DataBaseDriver {
 	}
 
 	@Override
+	protected String makeInsert(String table, Object data) throws SQLException {
+		return "INSERT INTO " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
+	}
+
+	@Override
 	protected String makeDelete(String table, Map<String, Object> condition) {
+		return "DELETE FROM " + this.getRealTableName(table) + " WHERE " + this.implode(condition, "AND");
+	}
+
+	@Override
+	protected String makeDelete(String table, Object condition) throws SQLException {
 		return "DELETE FROM " + this.getRealTableName(table) + " WHERE " + this.implode(condition, "AND");
 	}
 
@@ -58,7 +74,25 @@ public class MySQLDriver extends DataBaseDriver {
 	}
 
 	@Override
+	protected String makeUpdate(String table, Object data, Object condition) throws SQLException {
+		if (condition == null) {
+			return "UPDATE " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
+		} else {
+			return "UPDATE " + this.getRealTableName(table) + " SET " + this.implode(data, ",") + " WHERE " + this.implode(condition, "AND");
+		}
+	}
+
+	@Override
 	protected String makeUpdate(String table, Map<String, Object> data, String condition) {
+		if (condition == null || condition.equals("")) {
+			return "UPDATE " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
+		} else {
+			return "UPDATE " + this.getRealTableName(table) + " SET " + this.implode(data, ",") + " WHERE " + condition;
+		}
+	}
+
+	@Override
+	protected String makeUpdate(String table, Object data, String condition) throws SQLException {
 		if (condition == null || condition.equals("")) {
 			return "UPDATE " + this.getRealTableName(table) + " SET " + this.implode(data, ",");
 		} else {
@@ -228,6 +262,47 @@ public class MySQLDriver extends DataBaseDriver {
 			comma = glue;
 		}
 		return sql;
+	}
+
+	//@Override
+	protected String implode(Object data, String glue) throws SQLException {
+		String sql = "";
+
+		try {
+			StringBuffer stringBuffer = new StringBuffer();
+			String comma = "";
+			glue = " " + glue + " ";
+			BeanInfo beanInfo = Introspector.getBeanInfo(this.getClass());
+			PropertyDescriptor[] proDescrtptors = beanInfo.getPropertyDescriptors();
+			if (proDescrtptors != null && proDescrtptors.length - 1  > 0) {
+				for (PropertyDescriptor propDesc : proDescrtptors) {
+					Method getMethod = propDesc.getReadMethod();
+					Object propertyObject = getMethod.invoke(this);
+					if (propertyObject != null) {
+						stringBuffer.append(comma);
+						stringBuffer.append(this.quoteField(propDesc.getName()));
+						stringBuffer.append(" = ");
+						stringBuffer.append(this.quoteValue(propertyObject));
+						comma = glue;
+					}
+				}
+
+				if (stringBuffer.length() > 0) {
+					return stringBuffer.toString();
+				}  else {
+					throw new SQLException(data.getClass().getName() + " all get method return null!");
+				}
+			} else {
+				throw new SQLException(data.getClass().getName() + " is not a JavaBean. Not found 'get' method!");
+			}
+		} catch (InvocationTargetException e) {
+			throw new SQLException(data.getClass().getName() + "   " + e.getMessage());
+		} catch (IntrospectionException e) {
+			throw new SQLException(data.getClass().getName() + "   " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new SQLException(data.getClass().getName() + "   " + e.getMessage());
+		}
+
 	}
 
 	/**

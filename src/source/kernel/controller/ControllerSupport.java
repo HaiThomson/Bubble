@@ -11,7 +11,7 @@ import java.sql.SQLException;
 /**
  * @author Hai Thomson
  */
-public abstract class ActionSupport extends Action {
+public class ControllerSupport extends Controller {
 	protected void _createApp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Container.creatApp(request, response);
 	}

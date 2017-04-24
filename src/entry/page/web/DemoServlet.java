@@ -4,7 +4,7 @@ import source.kernel.Container;
 import source.kernel.config.GlobalConfig;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.helper.ArraysHelper;
-import source.aspect.method.DemoMethod;
+import source.aspect.page.DemoMethod;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

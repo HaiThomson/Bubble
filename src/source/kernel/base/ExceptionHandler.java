@@ -18,6 +18,7 @@ package source.kernel.base;
 
 import source.kernel.config.GlobalConfig;
 import source.kernel.DB;
+import source.kernel.helper.StackTraceHelper;
 import source.kernel.log.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -54,7 +55,11 @@ public class ExceptionHandler {
 		}
 
 		if (log) {
-			Logger.error(e.getClass().getName() + ": " + e.getMessage());
+			if (e.getMessage() != null && !e.getMessage().equals("")) {
+				Logger.error(e.getClass().getName() + ": " + e.getMessage());
+			} else {
+				Logger.error(e.getClass().getName() + ": " + StackTraceHelper.getStackTrace(e));
+			}
 		}
 
 		if (halt) {

@@ -32,7 +32,6 @@ public class MapHelper {
 	}
 
 	// 需更改循环部分,冗余的代码
-	// 静态方法调用本类方法不再加类名
 	private static String mapToString(Map map, int n) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Map\n" + nt(n-1) + "(" + "\n");

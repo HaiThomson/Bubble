@@ -1,11 +1,12 @@
 package entry.page.controller;
 
-import source.kernel.Container;
 import source.kernel.controller.Controller;
+import source.kernel.controller.ControllerSupport;
 import source.module.economy.Economyindex;
 
 import javax.servlet.annotation.WebFilter;
-import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 1、控制器职责拿到控制参数(URL/module参数)判断调用什么业务逻辑（一个或一组（N + 1| M)）。
@@ -19,7 +20,6 @@ import java.sql.SQLException;
  * 4、Struts1, Struts2, SpringMVC等MVC框架采用了方法扩展方式。虽然在形式上解决了控制器扩展的问题，但有逻辑问题。
  *    试想，建立了一个方法充当控制器，方法名就是控制器名。如果在里面写了业务逻辑，该方法立刻升级变成业务层。
  *    这就变成了模糊地带，方法是什么只在一念之间。真正实践上也无法阻止程序员在控制器方法内不写业务代码。
- * 5、为什么Bobble提供了Controller父类？人生不只诗和远方，还有苟且。
  * 6、给一个好的设计？请查阅web包控制器实现。控制器组是一个字符串数据，控制器就是一字符串。
  * 7、为什么Struts1, Struts2, SpringMVC不做成web包内的形式？因为无法做成父类，做成框架。所以也不要吐槽Struts1, Struts2, SpringMVC。
  * 8、需不需需要Service层接口？这个要看项目管理，架构如何分工。按层次分工就得用接口隔离上下层依赖，如果按模块分工就不需要。
@@ -27,15 +27,43 @@ import java.sql.SQLException;
  * @author Hai Thomson
  */
 @WebFilter(filterName = "EconomyController", urlPatterns = "/economy/*")
-public class EconomyController extends Controller {
+public class EconomyController extends ControllerSupport {
 	public String index() {
 		try {
-			Container.app().initSession = false;
-			Container.app().init();
 			Economyindex.run();
 			return "/economy/index.jsp";
 		} catch (Exception e) {
 			return Controller.ERROR;
 		}
+	}
+
+	/**
+	 *
+	 * @param request
+	 * @param response
+	 * @param methodName
+	 * @return 返回值确定是否继续向下运行
+	 * @throws Exception
+	 */
+	protected boolean _runBeforeAspect(HttpServletRequest request, HttpServletResponse response, String methodName) throws Exception {
+		System.out.println("运行EconomyController切面方法");
+		System.out.println("该方法在任意控制器方法之前运行");
+
+		return Boolean.TRUE;
+	}
+
+	/**
+	 *
+	 * @param request
+	 * @param response
+	 * @param methodName
+	 * @return 返回值确定是否继续向下运行
+	 * @throws Exception
+	 */
+	protected boolean _runAfterAspect(HttpServletRequest request, HttpServletResponse response, String methodName) throws Exception {
+		System.out.println("运行EconomyController切面方法");
+		System.out.println("该方法在任意控制器方法之后运行");
+
+		return Boolean.TRUE;
 	}
 }
