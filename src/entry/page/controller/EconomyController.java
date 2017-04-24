@@ -1,12 +1,18 @@
 package entry.page.controller;
 
+import com.alibaba.fastjson.JSON;
+import source.kernel.Container;
 import source.kernel.controller.Controller;
 import source.kernel.controller.ControllerSupport;
+import source.kernel.log.Logger;
+import source.kernel.view.data.json.JsonView;
 import source.module.economy.Economyindex;
 
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * 1、控制器职责拿到控制参数(URL/module参数)判断调用什么业务逻辑（一个或一组（N + 1| M)）。
@@ -35,6 +41,31 @@ public class EconomyController extends ControllerSupport {
 		} catch (Exception e) {
 			return Controller.ERROR;
 		}
+	}
+
+	public String head() {
+		Container.app().response.setHeader("Content-Type", "video/x-msvideo");
+		Container.app().response.setHeader("Content-Type", "application/xml");
+		Container.app().response.setHeader("Content-Type", "application/json");
+
+		try {
+			Economyindex.run();
+			return "/economy/index.jsp";
+		} catch (Exception e) {
+			return Controller.ERROR;
+		}
+	}
+
+	public String json() {
+		HashMap<String, String> map = new HashMap();
+		map.put("test", "test");
+		try {
+			JsonView.output(map, Container.app().request, Container.app().response);
+		} catch (IOException e) {
+			Logger.error(e.getMessage());
+			return Controller.ERROR;
+		}
+		return Controller.NONE;
 	}
 
 	/**

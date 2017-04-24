@@ -288,7 +288,7 @@ public class Authcode3 {
     }
   
     public static void main(String[] args) {
-        String test = "UTF-8中文";
+        String test = GlobalConfig.JAVA_ENCODING + "中文";
         String key = "bubble";
         String afStr = Authcode3.authcodeEncode(test, key);
         System.out.println("encode: " + afStr);

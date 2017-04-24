@@ -1,0 +1,46 @@
+package source.kernel.view;
+
+import source.kernel.view.jsp.JSPView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * @since 1.7
+ * @author Hai Thomson
+ */
+public class View {
+	public static void deliveryView(String path, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String viewSuffix = View.getViewSuffix(path);
+		if (viewSuffix == null && viewSuffix.equals("")) {
+			return;
+		}
+
+		switch (viewSuffix.toLowerCase()) {
+			case "jsp":
+				JSPView.output(path, request, response);
+				return;
+		}
+
+		throw new ServletException("");
+	}
+
+	private static String getViewSuffix(String path) {
+		if (path == null || path.equals("")) {
+			return null;
+		}
+
+		String regex=".+?//.([a-zA-z]+)";
+		Pattern pt=Pattern.compile(regex);
+		Matcher mt=pt.matcher(path);
+		if(mt.find()) {
+			return mt.group(1);
+		} else {
+			return null;
+		}
+	}
+}

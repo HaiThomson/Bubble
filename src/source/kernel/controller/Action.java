@@ -153,20 +153,22 @@ public abstract class Action extends Base implements Servlet, ServletConfig {
 			// 加载视图
 			if (result != null) {
 				switch (result.toString()) {
-					// 额外功能
 					case Controller.SUCCESS :
-						// 自动生成跳转路径
-						// Core.loadView(""); // 默认跳转至监听目录
+						// 额外功能,根据请求路径自动生成跳转路径.慎用
+						Core.forward(request.getServletPath());
+						break;
 					case Controller.ERROR :
 						response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						break;
 					case Controller.NONE :
 						// 不加载视图层
-					// 半个额外功能
+						break;
 					default:
 						Core.forward(result.toString());
+						break;
 				}
 			} else {
-				// 不加载视图层
+				// Nothin to do
 			}
 
 			if (!this._runAfterAspect(request, response, methodName)) {

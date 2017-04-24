@@ -241,6 +241,10 @@ public class Application {
 	}
 
 	protected void initOutput() {
+		// 输出格式, 输出编码, 头信息, 应由视图承担.虽然可以重复设置,但何必呢？
+		this.value.put("charset", GlobalConfig.OUTPUT_CHARSET);
+		this.value.put("java.encoding", GlobalConfig.JAVA_ENCODING);
+		// 这里可以压缩, 这个是通用的.
 	}
 
 	protected void initDB() throws SQLException {
