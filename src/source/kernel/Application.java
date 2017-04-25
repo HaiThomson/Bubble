@@ -241,10 +241,14 @@ public class Application {
 	}
 
 	protected void initOutput() {
-		// 输出格式, 输出编码, 头信息, 应由视图承担.虽然可以重复设置,但何必呢？
+		// 输出格式, 输出编码, 头信息, 应由视图承担.虽然可以重复设置,何必
 		this.value.put("charset", GlobalConfig.OUTPUT_CHARSET);
 		this.value.put("java.encoding", GlobalConfig.JAVA_ENCODING);
+
 		// 这里可以压缩, 这个是通用的.
+
+		// 验证gzip 重复压缩
+		// 这个功能要能配置开启 | 关闭
 	}
 
 	protected void initDB() throws SQLException {

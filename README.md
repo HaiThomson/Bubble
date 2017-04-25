@@ -60,7 +60,7 @@ Bubble高度模块化，采用无状态设计，具备多级缓存能力；是�
 	<td>插件系统,支持运行期间安装卸载</td>
 </tr>
 <tr>
-	<td>Crontab</td>
+	<td>Cron</td>
 	<td>计划任务</td>
 </tr>
 <tr>

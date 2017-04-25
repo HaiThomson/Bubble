@@ -48,6 +48,42 @@ LOCK TABLES `pre_common_cache` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pre_common_cron`
+--
+
+DROP TABLE IF EXISTS `pre_common_cron`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pre_common_cron` (
+  `cronid` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `type` enum('user','system','other','plugin') NOT NULL DEFAULT 'other',
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `minute` char(36) NOT NULL DEFAULT '',
+  `hour` char(36) NOT NULL DEFAULT '0',
+  `day` char(36) NOT NULL DEFAULT '0',
+  `month` char(36) NOT NULL DEFAULT '0',
+  `weekday` char(36) NOT NULL DEFAULT '0',
+  `available` tinyint(2) NOT NULL DEFAULT '0',
+  `class` varchar(100) NOT NULL DEFAULT '',
+  `method` varchar(50) NOT NULL,
+  `lastrun` int(10) unsigned NOT NULL DEFAULT '0',
+  `nextrun` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cronid`),
+  KEY `nextrun` (`available`,`nextrun`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pre_common_cron`
+--
+
+LOCK TABLES `pre_common_cron` WRITE;
+/*!40000 ALTER TABLE `pre_common_cron` DISABLE KEYS */;
+INSERT INTO `pre_common_cron` VALUES (1,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','0','*','*','*','*',1,'','',1464274791,1464278400);
+/*!40000 ALTER TABLE `pre_common_cron` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pre_common_member`
 --
 
@@ -138,7 +174,7 @@ CREATE TABLE `pre_common_syscache` (
 
 LOCK TABLES `pre_common_syscache` WRITE;
 /*!40000 ALTER TABLE `pre_common_syscache` DISABLE KEYS */;
-INSERT INTO `pre_common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',999999999);
+INSERT INTO `pre_common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
 /*!40000 ALTER TABLE `pre_common_syscache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,4 +208,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-16  3:26:18
+-- Dump completed on 2017-04-25 17:13:33
