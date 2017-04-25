@@ -10,6 +10,8 @@ import java.io.IOException;
  */
 public class View {
 
+	protected static ViewProvider viewProvider = null;
+
 	static {
 		View.init();
 	}
@@ -19,6 +21,6 @@ public class View {
 	}
 
 	public static void deliveryView(String path, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		viewProvider.outputData(path, request, response);
 	}
 }

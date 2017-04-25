@@ -13,24 +13,69 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 /**
  * 过滤器是拦截器，不是资源.访问路径还是要找原来访问路径.找不到报错
  * org.apache.jasper.servlet.JspServlet.handleMissingResource File [**********] not found
  * 用拦截器做Controller的框架都不会继续向下传递职责链，而是return 向上传递职责链
  * 所以,请将其它拦截器至于该拦截器之前。
+ *
+ * Controller基于Filter, 遇到自己不能处理的继续向下传递.Action没这功能.
+ * 推荐使用Controller，可以在一个ServletPath下构建一组 .htm, 一组 .json.
+ * Action只可以构建一组 .htm + N个.json
+ *
  * @since 1.7
  * @author Hai Thomson
  */
-public abstract class Controller extends Base implements Filter {
+public  class Controller extends Base implements Filter, FilterConfig {
 
 	public static final String NONE = "NONE";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String ERROR = "ERROR";
 
+	protected String RES_SUFFIX = GlobalConfig.RES_SUFFIX;
+
+	private transient FilterConfig config = null;
+
+	@Override
+	public String getFilterName() {
+		return this.config.getFilterName();
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		return this.config.getServletContext();
+	}
+
+	@Override
+	public String getInitParameter(String name) {
+		return this.config.getInitParameter(name);
+	}
+
+	@Override
+	public Enumeration<String> getInitParameterNames() {
+		return this.config.getInitParameterNames();
+	}
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		this.config = filterConfig;
 
+		String config_suffix = filterConfig.getInitParameter("suffix");
+		if (config_suffix != null) {
+			this.RES_SUFFIX = config_suffix;
+		}
+
+		this._init();
+	}
+
+	protected void _init() {
+
+	}
+
+	public FilterConfig getFilterConfig() {
+		return this.config;
 	}
 
 	@Override
@@ -61,11 +106,11 @@ public abstract class Controller extends Base implements Filter {
 			} // 超过一层的路径无法被鉴定 ['Controller' 的子类过滤项目根] 这种情况.
 
 			String resName = stringBuffer.toString();
-			String methodName = (resName.equals("") ? "index" : resName).replaceAll(GlobalConfig.RES_SUFFIX, "");
+			String methodName = (resName.equals("") ? "index" : resName).replaceAll(this.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();
 			if (methods == null || methods.length == 0) {
-				Logger.warn(this.getClass().getName() + ": not have method");
+				// Logger.warn(this.getClass().getName() + ": not have method");
 				filterChain.doFilter(servletRequest, servletResponse);
 				return;
 			} else {
@@ -177,6 +222,10 @@ public abstract class Controller extends Base implements Filter {
 
 	@Override
 	public void destroy() {
+		this._destroy();
+	}
+
+	protected void _destroy() {
 
 	}
 }

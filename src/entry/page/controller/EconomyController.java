@@ -9,6 +9,7 @@ import source.kernel.view.data.json.JsonView;
 import source.module.economy.Economyindex;
 
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.util.HashMap;
  *
  * @author Hai Thomson
  */
-@WebFilter(filterName = "EconomyController", urlPatterns = "/economy/*")
+@WebFilter(filterName = "EconomyController", urlPatterns = "/economy/*", initParams = {@WebInitParam(name = "suffix", value = ".htm")})
 public class EconomyController extends ControllerSupport {
 	public String index() {
 		try {

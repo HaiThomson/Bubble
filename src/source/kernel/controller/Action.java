@@ -26,6 +26,8 @@ public abstract class Action extends Base implements Servlet, ServletConfig {
 	public static final String SUCCESS = "SUCCESS";
 	public static final String ERROR = "ERROR";
 
+	protected String RES_SUFFIX = GlobalConfig.RES_SUFFIX;
+
 	private static final ResourceBundle lStrings = ResourceBundle.getBundle("javax.servlet.http.LocalStrings");
 
 	private transient ServletConfig config;
@@ -55,6 +57,12 @@ public abstract class Action extends Base implements Servlet, ServletConfig {
 
 	public void init(ServletConfig config) throws ServletException {
 		this.config = config;
+
+		String config_suffix = config.getInitParameter("suffix");
+		if (config_suffix != null) {
+			this.RES_SUFFIX = config_suffix;
+		}
+
 		this.init();
 	}
 
@@ -99,12 +107,13 @@ public abstract class Action extends Base implements Servlet, ServletConfig {
 		Object result = null;
 
 		try {
-			String resName = (String) Core.getRequestResource(request);
-			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(GlobalConfig.RES_SUFFIX, "");
+			String resName = Core.getRequestResource(request);
+			String methodName = (resName != null && !resName.equals("") ? resName : "index").replaceAll(this.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();
 			if (methods == null || methods.length == 0) {
-				Logger.warn(this.getClass().getName() + ": not have method");
+				// Logger.warn(this.getClass().getName() + ": not have method");
+				// Servlet再次传给自己？只能响应404
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			} else {
 				boolean found = false;
@@ -117,6 +126,7 @@ public abstract class Action extends Base implements Servlet, ServletConfig {
 				}
 
 				if (!found) {
+					// Servlet再次传给自己？只能响应404
 					response.sendError(HttpServletResponse.SC_NOT_FOUND);
 					return;
 				} else {
