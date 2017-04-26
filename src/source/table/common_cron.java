@@ -15,7 +15,7 @@ public class common_cron extends Table {
 		super("common_cron", "cronid");
 	}
 
-	public Map fetchNextTask() throws SQLException {
-		return DB.queryAll("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE available>'0' ORDER BY cronid");
+	public Map fetchNextTask(int now) throws SQLException {
+		return DB.queryAll("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE available>'0' and nextrun <= "+ now + " ORDER BY cronid");
 	}
 }
