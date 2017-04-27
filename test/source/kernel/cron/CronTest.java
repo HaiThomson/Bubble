@@ -1,7 +1,5 @@
 package source.kernel.cron;
 
-import source.kernel.DB;
-import source.kernel.config.GlobalConfig;
 import source.kernel.db.pool.ConnectionPooling;
 
 import java.sql.SQLException;

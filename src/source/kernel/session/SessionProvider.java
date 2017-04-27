@@ -21,5 +21,5 @@ public abstract class SessionProvider extends Base {
 
 	protected abstract void update(boolean isnew) throws SQLException;
 
-	protected abstract long clear();
+	public abstract long clear() throws SQLException;
 }

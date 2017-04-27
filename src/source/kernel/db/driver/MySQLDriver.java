@@ -150,6 +150,30 @@ public class MySQLDriver extends DataBaseDriver {
 	}
 
 	@Override
+	public String makeLockTable(String table, String type) throws SQLException {
+		if (type == null || type.equals("")) {
+			throw new SQLException("Null type");
+		}
+
+		if (table == null || table.equals("")) {
+			throw new SQLException("Null table");
+		}
+
+		type = type.toUpperCase();
+		switch (type) {
+			case "X" :
+				return "LOCK TABLE " + table + " WRITE";
+		}
+
+		throw new SQLException("not supported " + type);
+	}
+
+	@Override
+	public String makeUnlockTable(String table, String type) {
+		return "UNLOCK TABLES";
+	}
+
+	@Override
 	protected String makeTruncate(String table) {
 		return "TRUNCATE " + this.getRealTableName(table);
 	}

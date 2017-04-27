@@ -33,7 +33,9 @@ public class common_session_struct extends Table {
 		DB.update(this.tableName, data, DB.makeCondition(this.primaryKey, sessionid));
 	}
 
-	public long clear() {
-		return 0;
+	public long clear() throws SQLException {
+		int now = (int) (System.currentTimeMillis() / 1000);
+		String sql = "DELETE FROM " + DB.getRealTableName(this.tableName) + " WHERE `dateline` < " + now;
+		return DB.update(sql);
 	}
 }

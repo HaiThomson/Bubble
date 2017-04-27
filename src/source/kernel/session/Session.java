@@ -70,8 +70,4 @@ public class Session {
 			this.saved = true;
 		}
 	}
-
-	public void clear() {
-		this.sessionProvider.clear();
-	}
 }

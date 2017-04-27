@@ -16,7 +16,6 @@
  */
 package source.kernel.db;
 
-import source.kernel.base.Base;
 import source.kernel.db.pool.ConnectionPooling;
 
 import java.sql.Connection;
@@ -106,6 +105,10 @@ public abstract class DataBaseDriver {
             this.connection.rollback();
         }
     }
+
+    public abstract String makeLockTable(String table, String type) throws SQLException;
+
+    public abstract String makeUnlockTable(String table, String type);
 
     protected abstract String makeTruncate(String table);
 

@@ -132,7 +132,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	}
 
 	@Override
-	public long clear() {
+	public long clear() throws SQLException {
 		return this.table.clear();
 	}
 

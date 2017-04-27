@@ -39,7 +39,7 @@ public class WebContainerSessionProvider extends SessionProvider {
 	}
 
 	@Override
-	protected long clear() {
+	public long clear() {
 		// 此方法对HttpSession没有意义.永远返回0
 		return 0;
 	}

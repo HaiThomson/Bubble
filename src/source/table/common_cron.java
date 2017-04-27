@@ -15,7 +15,16 @@ public class common_cron extends Table {
 		super("common_cron", "cronid");
 	}
 
-	public Map fetchNextTask(int now) throws SQLException {
-		return DB.queryAll("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE available>'0' and nextrun <= "+ now + " ORDER BY cronid");
+	public void updateLastrun(int cronid, int now) throws SQLException {
+		String sql = "UPDATE " + DB.getRealTableName(this.tableName) + " SET lastrun = " + now + " WHERE cronid = " + cronid;
+		DB.update(sql);
+	}
+
+	public Map fetchTask(int now) throws SQLException {
+		// 玩集群,时间一致是最基本的要求.
+		// 允许10s的差值.
+		now = now - 10;
+		String sql = "SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE lastrun < " + now;
+		return DB.queryAll(sql);
 	}
 }

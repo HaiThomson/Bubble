@@ -35,6 +35,10 @@ public abstract class Table extends Base {
         this.checkPrimaryKey();
     }
 
+    public String getTableName() {
+        return this.tableName;
+    }
+
     /**
      * 用fetch更准确表达含义
      * 很多人用select为了和SQL CURD用词保持一致.
@@ -47,7 +51,7 @@ public abstract class Table extends Base {
         return DB.queryFirstRow("SELECT * FROM " + DB.getRealTableName(this.tableName) + " WHERE " + DB.makeCondition(this.primaryKey, value));
     }
 
-    public Map fetchAll(Object value) throws SQLException {
+    public Map fetchAll() throws SQLException {
         return DB.queryAll("SELECT * FROM " + DB.getRealTableName(this.tableName));
     }
 
