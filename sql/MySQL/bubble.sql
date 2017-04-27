@@ -64,13 +64,12 @@ CREATE TABLE `pre_common_cron` (
   `month` char(36) NOT NULL DEFAULT '0',
   `weekday` char(36) NOT NULL DEFAULT '0',
   `available` tinyint(2) NOT NULL DEFAULT '0',
-  `class` varchar(100) NOT NULL DEFAULT '',
-  `method` varchar(50) NOT NULL,
+  `taskclass` varchar(100) NOT NULL DEFAULT '',
+  `taskmethod` varchar(50) NOT NULL DEFAULT '',
   `lastrun` int(10) unsigned NOT NULL DEFAULT '0',
-  `nextrun` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`cronid`),
-  KEY `nextrun` (`available`,`nextrun`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+  KEY `nextrun` (`available`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -79,7 +78,7 @@ CREATE TABLE `pre_common_cron` (
 
 LOCK TABLES `pre_common_cron` WRITE;
 /*!40000 ALTER TABLE `pre_common_cron` DISABLE KEYS */;
-INSERT INTO `pre_common_cron` VALUES (1,'system','定时清理Session','0','*','*','*','*',1,'','',1464274791,1464278400);
+INSERT INTO `pre_common_cron` VALUES (1,'system','定时清理Session','*','*/2','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(2,'system','定时清理Session','*/1','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(3,'system','定时清理Session','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400),(24,'system','定时清理Session','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400);
 /*!40000 ALTER TABLE `pre_common_cron` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,4 +207,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-25 17:13:33
+-- Dump completed on 2017-04-27 17:05:41
