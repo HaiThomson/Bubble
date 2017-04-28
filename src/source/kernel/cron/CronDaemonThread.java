@@ -41,7 +41,7 @@ public class CronDaemonThread extends Thread {
 
 			try {
 				DB.beginTransaction();
-				DB.executeCommand(DB.getDriver().makeLockTable(DB.getRealTableName(table.getTableName()), "X"));
+				DB.executeCommand(DB.getDriver().makeLockTable(table.getTableName(), "X"));
 
 				Date now = new Date();
 				int now_int = (int) (now.getTime() / 1000);
@@ -58,10 +58,11 @@ public class CronDaemonThread extends Thread {
 					}
 				}
 				// System.out.println("本次计划任务已全部加载");
-				DB.executeCommand(DB.getDriver().makeUnlockTable(DB.getRealTableName(table.getTableName()), "X"));
+				DB.executeCommand(DB.getDriver().makeUnlockTable(table.getTableName(), "X"));
 				DB.commitTransaction();
 			} catch (Exception e) {
 				try {
+					DB.executeCommand(DB.getDriver().makeUnlockTable(table.getTableName(), "X"));
 					DB.rollBackTransaction();
 				} catch (SQLException cause) {
 					cause.printStackTrace();

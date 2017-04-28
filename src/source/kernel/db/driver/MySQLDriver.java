@@ -162,7 +162,7 @@ public class MySQLDriver extends DataBaseDriver {
 		type = type.toUpperCase();
 		switch (type) {
 			case "X" :
-				return "LOCK TABLE " + table + " WRITE";
+				return "LOCK TABLE " + this.getRealTableName(table) + " WRITE";
 		}
 
 		throw new SQLException("not supported " + type);
