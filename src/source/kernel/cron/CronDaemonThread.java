@@ -1,6 +1,5 @@
 package source.kernel.cron;
 
-import com.sun.javafx.tk.Toolkit;
 import source.kernel.Container;
 import source.kernel.DB;
 import source.kernel.config.GlobalConfig;
@@ -12,7 +11,7 @@ import java.util.*;
 /**
  * @author Hai Thomson
  */
-public class CronDaemonThread extends Thread {
+class CronDaemonThread extends Thread {
 
 	protected common_cron table = (common_cron) Container.table("common_cron");
 

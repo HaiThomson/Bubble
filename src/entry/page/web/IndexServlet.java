@@ -9,7 +9,6 @@ import java.io.IOException;
 
 /**
  * 欢迎页面
- * @author Hai Thomson
  */
 @WebServlet(name = "IndexServlet", urlPatterns = "/index.htm")
 public class IndexServlet extends HttpServlet {

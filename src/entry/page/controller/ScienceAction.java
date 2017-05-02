@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 
 /**
  *
- * @author Hai Thomson
  */
 @WebServlet(name = "ScienceAction", urlPatterns = "/science/*")
 public class ScienceAction extends ActionSupport {

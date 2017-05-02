@@ -22,6 +22,7 @@ import source.kernel.base.ExceptionHandler;
 import source.kernel.helper.MD5Helper;
 import source.kernel.security.validate.Validation;
 import source.kernel.serialization.oracle.JavaSerialization;
+import source.language.zh.Language_Core;
 import source.table.common_member;
 import source.table.common_syscache;
 
@@ -77,13 +78,11 @@ public class Core {
 			// 刨去过滤路径 + 第二个'/'
 			if (stringBuffer.length() == 0) {
 				// 根
-				throw new ServletException("Root resource not supported");
+				return "";
 			} else if (stringBuffer.indexOf("/") > 0) {
 				stringBuffer.delete(0, stringBuffer.indexOf("/") + 1);
 			} else {
 				// 根下资源
-				// 匹配根下资源请使用绝对路径以保证程序健壮性
-				throw new ServletException("Root resource not supported");
 			}
 			resource = stringBuffer.toString();
 		}
@@ -241,9 +240,10 @@ public class Core {
 		return s;
 	}
 
+	// 多级路径;多级路径加载形式;语言配置;语言动态,静态配置;自动实例化;
 	public static void loadLang(String core) {
 		Map lang = (Map) Container.app().Global.get("lang");
-		lang.put("core", source.language.zh.Core.instance());
+		lang.put("core", Language_Core.instance());
 	}
 
 	public static String generateFormhash() {
@@ -253,7 +253,7 @@ public class Core {
 	/**
 	 * 检查FormHash, 如果FormHash值异常返回true
 	 * “灌水攻击”，“多次提交”的正确含义：未经授权的表单提交
-	 * 若检查机制，意义不大
+	 * 弱检查机制，意义不大
 	 * @return
 	 */
 	private boolean checkFormhash() {

@@ -4,7 +4,6 @@ import source.kernel.Core;
 import source.kernel.base.Base;
 import source.kernel.base.ExceptionHandler;
 import source.kernel.config.GlobalConfig;
-import source.kernel.log.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

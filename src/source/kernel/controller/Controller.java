@@ -92,7 +92,7 @@ public  class Controller extends Base implements Filter, FilterConfig {
 		Object result = null;
 
 		try {
-			// 从ServletPath开始
+			/*// 从ServletPath开始
 			StringBuffer stringBuffer = new StringBuffer(request.getServletPath());
 			// 刨去第一个'/'
 			stringBuffer.deleteCharAt(0);
@@ -103,9 +103,9 @@ public  class Controller extends Base implements Filter, FilterConfig {
 				stringBuffer.delete(0, stringBuffer.indexOf("/") + 1);
 			} else {
 				throw new ServletException(this.getClass().getName() + ". The subclass of Controller does not support filtering the root directory!");
-			} // 超过一层的路径无法被鉴定 ['Controller' 的子类过滤项目根] 这种情况.
+			} // 超过一层的路径无法被鉴定 ['Controller' 的子类过滤项目根] 这种情况.*/
 
-			String resName = stringBuffer.toString();
+			String resName = Core.getRequestResource(request);
 			String methodName = (resName.equals("") ? "index" : resName).replaceAll(this.RES_SUFFIX, "");
 
 			Method[] methods = this.getClass().getDeclaredMethods();

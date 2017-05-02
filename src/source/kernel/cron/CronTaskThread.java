@@ -6,7 +6,7 @@ import source.kernel.config.GlobalConfig;
 /**
  * @author Hai Thomson
  */
-public class CronTaskThread extends Thread {
+class CronTaskThread extends Thread {
 	protected String taskclass = null;
 	protected String method    = null;
 

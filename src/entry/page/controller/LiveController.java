@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Hai Thomson
+ *
  */
 @WebFilter(filterName = "LiveController", urlPatterns = "/live/*")
 public class LiveController extends Controller {

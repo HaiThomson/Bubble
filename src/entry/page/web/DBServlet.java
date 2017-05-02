@@ -14,7 +14,6 @@ import java.io.IOException;
 
 /**
  * Database类功能测试，访问入口
- * @author Hai Thomson
  */
 @WebServlet(name = "DBServlet", urlPatterns = "/db/*")
 public class DBServlet extends HttpServlet {

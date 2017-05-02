@@ -1,6 +1,5 @@
 package entry.page.controller;
 
-import com.alibaba.fastjson.JSON;
 import source.kernel.Container;
 import source.kernel.controller.Controller;
 import source.kernel.controller.ControllerSupport;
@@ -31,7 +30,6 @@ import java.util.HashMap;
  * 7、为什么Struts1, Struts2, SpringMVC不做成web包内的形式？因为无法做成父类，做成框架。所以也不要吐槽Struts1, Struts2, SpringMVC。
  * 8、需不需需要Service层接口？这个要看项目管理，架构如何分工。按层次分工就得用接口隔离上下层依赖，如果按模块分工就不需要。
  *
- * @author Hai Thomson
  */
 @WebFilter(filterName = "EconomyController", urlPatterns = "/economy/*", initParams = {@WebInitParam(name = "suffix", value = ".htm")})
 public class EconomyController extends ControllerSupport {

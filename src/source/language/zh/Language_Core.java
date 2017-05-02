@@ -7,19 +7,21 @@ import java.util.HashMap;
 /**
  * 效率上，配置文件 + Map缓存 和 静态字符串没有区别.
  * WEB不像APP可以无缝切换语言配置。不同字长的语言对前端er是个巨大的难题。
- * 推荐使用模板切换实现国际化，简单，实用！
+ *
+ * 使用模板切换实现国际化，简单，实用. 各种重复,多次修改.
+ *
  * @author Hai Thomson
  */
-public class Core extends Base {
+public class Language_Core extends Base {
 	// Format: 定义一个私有的本类的静态属性
-	private static final Core core = new Core();
+	private static final Language_Core core = new Language_Core();
 
 	// Format: 私有化构造方法
-	private Core() {}
+	private Language_Core() {}
 
 	// Format: 定义一个返回单例的方法.方法名限定为 public static 类 instance
-	public static Core instance() {
-		return Core.core;
+	public static Language_Core instance() {
+		return Language_Core.core;
 	}
 
 	// Format: 定义单一字符串

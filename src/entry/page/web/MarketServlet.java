@@ -15,7 +15,6 @@ import java.io.IOException;
 
 /**
  * 逻辑控制层技术探索原型
- * @author Hai Thomson
  */
 @WebServlet(name = "MarketServlet", urlPatterns = "/market/*")
 public class MarketServlet extends HttpServlet {

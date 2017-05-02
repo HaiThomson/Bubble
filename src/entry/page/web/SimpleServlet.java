@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @author Hai Thomson
+ *
  */
 @WebServlet(name = "SimpleServlet", urlPatterns = "/simple/*")
 public class SimpleServlet extends HttpServlet {

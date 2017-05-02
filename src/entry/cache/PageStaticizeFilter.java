@@ -6,7 +6,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Hai Thomson
+ *
  */
 @WebFilter(filterName = "PageStaticizeFilter", urlPatterns = "/page/*")
 public class PageStaticizeFilter extends CacheFilter {

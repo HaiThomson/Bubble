@@ -20,7 +20,6 @@ import java.io.IOException;
  * DataBaseDriver + DAO + 不在Table子类外使用DB类方法才能做到平缓切换数据库。
  * Container.table("") + 外部内存缓存，实现数据缓存, 也要求不在Table子类外使用DB类方法才能做到平缓切换数据库。
  *
- * @author Hai Thomson
  */
 @WebServlet(name = "DemoServlet", urlPatterns = "/demo.htm")
 public class DemoServlet extends HttpServlet {

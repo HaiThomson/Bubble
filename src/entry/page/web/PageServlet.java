@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  * 修改RES_ARRAY加载规则即可实现伪静态
  * 伪静态化可以利用浏览器缓存做真静态化.处理好用户状态及动态部分
- * @author Hai Thomson
+ *
  */
 @WebServlet(name = "PageServlet", urlPatterns = "/page/*")
 public class PageServlet extends HttpServlet {

@@ -14,7 +14,6 @@ import java.io.IOException;
 
 /**
  * 静态化功能测试，访问入口
- * @author Hai Thomson
  */
 @WebServlet(name = "CacheServlet", urlPatterns = "/cache/*")
 public class CacheServlet extends HttpServlet {

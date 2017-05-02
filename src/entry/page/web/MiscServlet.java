@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * miscellaneous 杂项测试
- * @author Hai Thomson
+ *
  */
 @WebServlet(name = "MiscServlet", urlPatterns = "/misc.htm")
 public class MiscServlet extends HttpServlet {
