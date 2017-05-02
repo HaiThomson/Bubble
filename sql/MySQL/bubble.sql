@@ -24,13 +24,13 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bubble` /*!40100 DEFAULT CHARACTER SET
 USE `bubble`;
 
 --
--- Table structure for table `pre_common_cache`
+-- Table structure for table `common_cache`
 --
 
-DROP TABLE IF EXISTS `pre_common_cache`;
+DROP TABLE IF EXISTS `common_cache`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pre_common_cache` (
+CREATE TABLE `common_cache` (
   `cachekey` varchar(255) NOT NULL DEFAULT '',
   `cachevalue` mediumblob NOT NULL,
   `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'ËøáÊúüÊó∂Èó¥',
@@ -39,22 +39,22 @@ CREATE TABLE `pre_common_cache` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pre_common_cache`
+-- Dumping data for table `common_cache`
 --
 
-LOCK TABLES `pre_common_cache` WRITE;
-/*!40000 ALTER TABLE `pre_common_cache` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pre_common_cache` ENABLE KEYS */;
+LOCK TABLES `common_cache` WRITE;
+/*!40000 ALTER TABLE `common_cache` DISABLE KEYS */;
+/*!40000 ALTER TABLE `common_cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pre_common_cron`
+-- Table structure for table `common_cron`
 --
 
-DROP TABLE IF EXISTS `pre_common_cron`;
+DROP TABLE IF EXISTS `common_cron`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pre_common_cron` (
+CREATE TABLE `common_cron` (
   `cronid` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `type` enum('user','system','other','plugin') NOT NULL DEFAULT 'other',
   `name` varchar(100) NOT NULL DEFAULT '',
@@ -73,23 +73,23 @@ CREATE TABLE `pre_common_cron` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pre_common_cron`
+-- Dumping data for table `common_cron`
 --
 
-LOCK TABLES `pre_common_cron` WRITE;
-/*!40000 ALTER TABLE `pre_common_cron` DISABLE KEYS */;
-INSERT INTO `pre_common_cron` VALUES (1,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','*','*/2','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(2,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','*/1','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(3,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400),(24,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400);
-/*!40000 ALTER TABLE `pre_common_cron` ENABLE KEYS */;
+LOCK TABLES `common_cron` WRITE;
+/*!40000 ALTER TABLE `common_cron` DISABLE KEYS */;
+INSERT INTO `common_cron` VALUES (1,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','*','*/2','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(2,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','*/1','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493283480),(3,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400),(24,'system','ÂÆöÊó∂Ê∏ÖÁêÜSession','10-40','*','*','*','*',1,'source.include.cron.SessionClearTask','clearOutOfDateSession',1493282400);
+/*!40000 ALTER TABLE `common_cron` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pre_common_member`
+-- Table structure for table `common_member`
 --
 
-DROP TABLE IF EXISTS `pre_common_member`;
+DROP TABLE IF EXISTS `common_member`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pre_common_member` (
+CREATE TABLE `common_member` (
   `userid` varchar(30) NOT NULL,
   `email` char(40) NOT NULL DEFAULT '',
   `username` char(15) NOT NULL DEFAULT '',
@@ -108,22 +108,22 @@ CREATE TABLE `pre_common_member` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pre_common_member`
+-- Dumping data for table `common_member`
 --
 
-LOCK TABLES `pre_common_member` WRITE;
-/*!40000 ALTER TABLE `pre_common_member` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pre_common_member` ENABLE KEYS */;
+LOCK TABLES `common_member` WRITE;
+/*!40000 ALTER TABLE `common_member` DISABLE KEYS */;
+/*!40000 ALTER TABLE `common_member` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pre_common_session_struct`
+-- Table structure for table `common_session_struct`
 --
 
-DROP TABLE IF EXISTS `pre_common_session_struct`;
+DROP TABLE IF EXISTS `common_session_struct`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pre_common_session_struct` (
+CREATE TABLE `common_session_struct` (
   `sessionid` char(32) NOT NULL,
   `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'ËøáÊúüÊó∂Èó¥',
   `ip1` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -144,22 +144,22 @@ CREATE TABLE `pre_common_session_struct` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pre_common_session_struct`
+-- Dumping data for table `common_session_struct`
 --
 
-LOCK TABLES `pre_common_session_struct` WRITE;
-/*!40000 ALTER TABLE `pre_common_session_struct` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pre_common_session_struct` ENABLE KEYS */;
+LOCK TABLES `common_session_struct` WRITE;
+/*!40000 ALTER TABLE `common_session_struct` DISABLE KEYS */;
+/*!40000 ALTER TABLE `common_session_struct` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pre_common_syscache`
+-- Table structure for table `common_syscache`
 --
 
-DROP TABLE IF EXISTS `pre_common_syscache`;
+DROP TABLE IF EXISTS `common_syscache`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pre_common_syscache` (
+CREATE TABLE `common_syscache` (
   `cachename` varchar(32) NOT NULL,
   `cachedata` mediumblob NOT NULL,
   `dateline` int(10) unsigned NOT NULL COMMENT 'ËøáÊúüÊó∂Èó¥',
@@ -168,13 +168,13 @@ CREATE TABLE `pre_common_syscache` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pre_common_syscache`
+-- Dumping data for table `common_syscache`
 --
 
-LOCK TABLES `pre_common_syscache` WRITE;
-/*!40000 ALTER TABLE `pre_common_syscache` DISABLE KEYS */;
-INSERT INTO `pre_common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
-/*!40000 ALTER TABLE `pre_common_syscache` ENABLE KEYS */;
+LOCK TABLES `common_syscache` WRITE;
+/*!40000 ALTER TABLE `common_syscache` DISABLE KEYS */;
+INSERT INTO `common_syscache` VALUES ('setting','¨Ì\0sr\0java.util.HashMap⁄¡√`—\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0\noltimespansr\0java.lang.Long;ã‰êÃè#ﬂ\0J\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp\0\0\0\0\0\0\0\nx',1491667478);
+/*!40000 ALTER TABLE `common_syscache` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -207,4 +207,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-04-27 17:05:41
+-- Dump completed on 2017-05-02 16:39:55
