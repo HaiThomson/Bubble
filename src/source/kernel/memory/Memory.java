@@ -52,7 +52,7 @@ public class Memory {
 		}
 
 		try {
-			if (!(Class.forName(GlobalConfig.SOURCE_PATH + ".kernel.memory.SimpleMapMemoryDriver").getName().equals(""))) {
+			if (!(Class.forName(GlobalConfig.SOURCE_PATH + ".kernel.memory.driver.SimpleMapMemoryDriver").getName().equals(""))) {
 				extension.put("SimpleMap", true);
 			}
 		} catch (ClassNotFoundException e) {

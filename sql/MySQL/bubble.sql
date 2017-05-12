@@ -19,9 +19,9 @@
 -- Current Database: `bubble`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bubble` /*!40100 DEFAULT CHARACTER SET utf8 */;
+-- CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bubble` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-USE `bubble`;
+-- USE `bubble`;
 
 --
 -- Table structure for table `common_cache`

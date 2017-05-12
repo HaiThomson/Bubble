@@ -83,7 +83,7 @@ public class DBStructSessionProvider extends SessionProvider {
 	@Override
 	public boolean isExistent(String sessionid, String ip, String userid) throws SQLException {
 		Map sessionValue = null;
-		if(sessionid !=null && !sessionid.equals("")) {
+		if(sessionid != null && !sessionid.equals("")) {
 			sessionValue = this.table.fetch(sessionid, ip, userid);
 		} else {
 			return false;
